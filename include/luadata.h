@@ -24,29 +24,51 @@ enum luatype {
 	table
 };
 
+/**
+ * The different modes to open a data file.
+ */
 enum loadfilemode {
+	/** Choose mode by looking at the extension (lua for source, anything else for data). */
 	automatic,
+
+	/** Loads the file as Lua source. */
 	source,
+
+	/** Loads the file as data binary. */
 	binary
 };
 
+/**
+ * Represents a single value retrieved from Lua.
+ */
 class LUADATA_API luavalue {
 	impl::luavalueimpl *_pimpl;
 
 public:
 	~luavalue();
 
+	/** Gets the value as a double. */
 	operator double() const;
+
+	/** Gets the value as an integer. */
 	operator int() const;
+
+	/** Gets the value as a string. */
 	operator std::string() const;
+
+	/** Gets the value as a boolean. */
 	operator bool() const;
 
 	//luavalue& operator[](const std::string& valuename) const;
 
+	/** Gets the Lua type of the value. */
 	luatype type() const;
 
 private:
+	/** Construction is done by the implementation. */
 	luavalue(impl::luavalueimpl *impl);
+
+	/** Copy is forbidden. */
 	luavalue(const luavalue&);
 	luavalue& operator=(const luavalue&);
 

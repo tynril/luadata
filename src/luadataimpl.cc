@@ -20,10 +20,8 @@ bool luadataimpl::loadfile(const std::string &path, loadfilemode mode) {
 	if(mode == automatic) {
 		if(path.rfind(".lua") == path.length() - 4)
 			mode = source;
-		else if(path.rfind(".lda") == path.length() - 4)
-			mode = binary;
 		else
-			return false;
+			mode = binary;
 	}
 
 	// Load in the right mode.
