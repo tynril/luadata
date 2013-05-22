@@ -55,22 +55,33 @@ private:
 };
 
 /**
- * Access data stored in LUA files or preparsed LUA files.
+ * This is the central class providing all features of the
+ * lua-data library.
  */
 class LUADATA_API luadata {
 	impl::luadataimpl *_pimpl;
 
 public:
+	/** Creates a Lua data provider. */
 	luadata();
+
+	/** Destroys the Lua data provider. */
 	~luadata();
 
-	bool loadfile(const std::string &name, const std::string &path, loadfilemode mode = automatic);
+	/** Loads a data file. */
 	bool loadfile(const std::string &path, loadfilemode mode = automatic);
 
+	/** Saves every loaded data files to a binary data file. */
+	bool savefile(const std::string &path);
+
+	/** Access a value defined in one of the loaded files. */
 	luavalue operator[](const std::string& valuename) const;
 
 private:
+	/** Copy is disabled. */
 	luadata(const luadata&);
+
+	/** Copy is disabled. */
 	const luadata& operator=(const luadata&);
 };
 

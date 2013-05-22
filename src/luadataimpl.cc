@@ -16,14 +16,6 @@ luadataimpl::~luadataimpl() {
 }
 
 bool luadataimpl::loadfile(const std::string &path, loadfilemode mode) {
-	// The chunk will be named after the file.
-	std::string filename = std::string(std::find_if( path.rbegin(), path.rend(), pathseparatormatch()).base(), path.end());
-	std::string::const_reverse_iterator pivot = std::find(filename.rbegin(), filename.rend(), '.');
-    std::string name = pivot == filename.rend() ? filename : std::string(filename.begin(), pivot.base() - 1);
-	return loadfile(name, path, mode);
-}
-
-bool luadataimpl::loadfile(const std::string &name, const std::string &path, loadfilemode mode) {
 	// If the mode is automatic, it depends on file extension.
 	if(mode == automatic) {
 		if(path.rfind(".lua") == path.length() - 4)
@@ -36,17 +28,22 @@ bool luadataimpl::loadfile(const std::string &name, const std::string &path, loa
 
 	// Load in the right mode.
 	if(mode == binary)
-		return loadbinaryfile(name, path);
+		return loadbinaryfile(path);
 	else
-		return loadsourcefile(name, path);
+		return loadsourcefile(path);
 }
 
-bool luadataimpl::loadbinaryfile(const std::string &name, const std::string &path) {
+bool luadataimpl::savefile(const std::string &path) {
 	// Not yet implemented.
 	return false;
 }
 
-bool luadataimpl::loadsourcefile(const std::string &name, const std::string &path) {
+bool luadataimpl::loadbinaryfile(const std::string &path) {
+	// Not yet implemented.
+	return false;
+}
+
+bool luadataimpl::loadsourcefile(const std::string &path) {
 	// Load the file in the state.
 	if(luaL_loadfile(L, path.c_str()))
 		return false;
@@ -65,14 +62,27 @@ bool luadataimpl::loadsourcefile(const std::string &name, const std::string &pat
 		return false;
 
 	// Moves the chunk to its storage.
-	_chunks[name] = std::move(chunk);
+	_chunks.push_back(std::move(chunk));
 
 	return true;
 }
 
 luavalue luadataimpl::get(const std::string &valuename) {
-	// Get the value and its type.
+	// Put the value at the top of the stack.
 	lua_getglobal(L, valuename.c_str());
+
+	// Read it.
+	luavalueimpl *value = getfromstack();
+
+	// Removes the value from the stack.
+	lua_pop(L, 1);
+
+	// And returns it.
+	return luavalue(value);
+}
+
+luavalueimpl * luadataimpl::getfromstack() {
+	// Get the value type.
 	int type = lua_type(L, -1);
 
 	// Creates the proper implementation.
@@ -80,14 +90,8 @@ luavalue luadataimpl::get(const std::string &valuename) {
 
 	// Loads the value with data depending on the type.
 	switch(type) {
-	case LUA_TNIL:
-		vimpl = new nilluavalueimpl();
-		break;
 	case LUA_TBOOLEAN:
 		vimpl = new boolluavalueimpl(lua_toboolean(L, -1) != 0);
-		break;
-	case LUA_TLIGHTUSERDATA:
-		throw std::runtime_error("Not yet implemented.");
 		break;
 	case LUA_TNUMBER:
 		vimpl = new numberluavalueimpl(lua_tonumber(L, -1));
@@ -99,24 +103,19 @@ luavalue luadataimpl::get(const std::string &valuename) {
 		throw std::runtime_error("Not yet implemented.");
 		break;
 	case LUA_TFUNCTION:
-		throw std::runtime_error("Not yet implemented.");
+		// Call the function and gets its 1st result.
+		lua_pcall(L, 0, 1, 0);
+		vimpl = getfromstack();
 		break;
+	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
-		throw std::runtime_error("Not yet implemented.");
-		break;
 	case LUA_TTHREAD:
-		throw std::runtime_error("Not yet implemented.");
+	case LUA_TNIL:
+		vimpl = new nilluavalueimpl();
 		break;
 	}
 
-	if(vimpl == nullptr) {
-		throw std::runtime_error("Unable to find a representation for the underlying type.");
-	}
-
-	// Removes the value from the stack.
-	lua_pop(L, 1);
-
-	return luavalue(vimpl);
+	return vimpl;
 }
 
 int luadataimpl::luawriter(lua_State *L, const void *chunk, std::size_t size, void *userChunkPtr) {

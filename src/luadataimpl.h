@@ -4,8 +4,6 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
-#include <algorithm>
-#include <unordered_map>
 
 extern "C" {
 #include <lua.h>
@@ -39,7 +37,7 @@ class luadataimpl {
 	lua_State *L;
 
 	/** Map holding all loaded chunks. */
-	std::unordered_map<std::string, luachunk> _chunks;
+	std::vector<luachunk> _chunks;
 
 public:
 	/** The constructor creates a new Lua state. */
@@ -48,20 +46,23 @@ public:
 	/** The destructor releases the Lua state. */
 	~luadataimpl();
 
-	/** Loads a file (source or binary) and put it in a chunk with the given name. */
-	bool loadfile(const std::string &name, const std::string &path, loadfilemode mode = automatic);
-
-	/** Loads a file (source or binary) and put it in a chunk with the file's name. */
+	/** Loads a file (source or binary). */
 	bool loadfile(const std::string &path, loadfilemode mode = automatic);
+
+	/** Saves a binary file with all the loaded data. */
+	bool savefile(const std::string &path);
 
 	luavalue get(const std::string &valuename);
 
 private:
 	/** Loads a binary file and put it in a chunk with the given name. */
-	bool loadbinaryfile(const std::string &name, const std::string &path);
+	bool loadbinaryfile(const std::string &path);
 
 	/** Loads a source file and put it in a chunk with the given name. */
-	bool loadsourcefile(const std::string &name, const std::string &path);
+	bool loadsourcefile(const std::string &path);
+
+	/** Gets a luavalue from the top of the stack. */
+	luavalueimpl * getfromstack();
 	
 	/** Static function used by lua_dump to  */
 	static int luawriter(lua_State *L, const void *chunk, size_t size, void *userChunk);

@@ -45,15 +45,15 @@ luadata::~luadata() {
 	delete _pimpl;
 }
 
-bool luadata::loadfile(const std::string& name, const std::string& path, loadfilemode mode) {
-	return _pimpl->loadfile(name, path, mode);
-}
-
-bool luadata::loadfile(const std::string& path, loadfilemode mode) {
+bool luadata::loadfile(const std::string &path, loadfilemode mode) {
 	return _pimpl->loadfile(path, mode);
 }
 
-luavalue luadata::operator[](const std::string& valuename) const {
+bool luadata::savefile(const std::string &path) {
+	return _pimpl->savefile(path);
+}
+
+luavalue luadata::operator[](const std::string &valuename) const {
 	return _pimpl->get(valuename);
 }
 
