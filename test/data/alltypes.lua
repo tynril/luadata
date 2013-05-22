@@ -2,8 +2,7 @@
 	Test file for all the different kind of values that
 	luadata can handle.
 ]]--
-floating_value = 3.14159
-double_value = 3.1415926535897932384626433832795
+float_value = 3.14159
 integer_value = 42
 string_value = "test"
 boolean_value = true

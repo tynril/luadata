@@ -21,6 +21,16 @@ solution "lua-data"
 		defines { "NDEBUG" }
 		flags { "OptimizeSpeed" }
 	
+	-- Output folders
+	configuration { "x32", "Debug" }
+		targetdir "bin/x32/Debug"
+	configuration { "x32", "Release" }
+		targetdir "bin/x32/Release"
+	configuration { "x64", "Debug" }
+		targetdir "bin/x64/Debug"
+	configuration { "x64", "Release" }
+		targetdir "bin/x64/Release"
+	
 	-- Static lua-data library
 	project "lua-data-static"
 		kind "StaticLib"
@@ -33,16 +43,6 @@ solution "lua-data"
 		-- Lua dependency
 		includedirs { lua .. "/src" }
 		links { "lua-static" }
-		
-		-- Output folders
-		configuration { "x32", "Debug" }
-			targetdir "bin/x32/Debug"
-		configuration { "x32", "Release" }
-			targetdir "bin/x32/Release"
-		configuration { "x64", "Debug" }
-			targetdir "bin/x64/Debug"
-		configuration { "x64", "Release" }
-			targetdir "bin/x64/Release"
 	
 	-- Shared lua-data library
 	project "lua-data-shared"
@@ -57,16 +57,6 @@ solution "lua-data"
 		-- Lua dependency
 		includedirs { lua .. "/src" }
 		links { "lua-shared" }
-		
-		-- Output folders
-		configuration { "x32", "Debug" }
-			targetdir "bin/x32/Debug"
-		configuration { "x32", "Release" }
-			targetdir "bin/x32/Release"
-		configuration { "x64", "Debug" }
-			targetdir "bin/x64/Debug"
-		configuration { "x64", "Release" }
-			targetdir "bin/x64/Release"
 	
 	-- Test project (statically linked)
 	project "lua-data-test-static"
@@ -75,20 +65,11 @@ solution "lua-data"
 		
 		-- Project files
 		files { "test/**.h", "test/**.cc" }
+		debugdir "test"
 		
 		-- Lua-data dependency
 		includedirs { "include" }
 		links { "lua-data-static" }
-		
-		-- Output folders
-		configuration { "x32", "Debug" }
-			targetdir "bin/x32/Debug/test"
-		configuration { "x32", "Release" }
-			targetdir "bin/x32/Release/test"
-		configuration { "x64", "Debug" }
-			targetdir "bin/x64/Debug/test"
-		configuration { "x64", "Release" }
-			targetdir "bin/x64/Release/test"
 	
 	-- Test project (dynamically linked)
 	project "lua-data-test-shared"
@@ -97,20 +78,11 @@ solution "lua-data"
 		
 		-- Project files
 		files { "test/**.h", "test/**.cc" }
+		debugdir "test"
 		
 		-- Lua-data dependency
 		includedirs { "include" }
 		links { "lua-data-shared" }
-		
-		-- Output folders
-		configuration { "x32", "Debug" }
-			targetdir "bin/x32/Debug/test"
-		configuration { "x32", "Release" }
-			targetdir "bin/x32/Release/test"
-		configuration { "x64", "Debug" }
-			targetdir "bin/x64/Debug/test"
-		configuration { "x64", "Release" }
-			targetdir "bin/x64/Release/test"
 	
 	-- Lua dependency (static library)
 	project "lua-static"
@@ -119,17 +91,8 @@ solution "lua-data"
 		
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 		files { lua .. "/src/*.h", lua .. "/src/*.hpp", lua .. "/src/*.c" }
+		vpaths { ["*"] = lua }
 		excludes { lua .. "/src/lua.c" }
-		
-		-- Output folders
-		configuration { "x32", "Debug" }
-			targetdir "bin/x32/Debug/3rd-party"
-		configuration { "x32", "Release" }
-			targetdir "bin/x32/Release/3rd-party"
-		configuration { "x64", "Debug" }
-			targetdir "bin/x64/Debug/3rd-party"
-		configuration { "x64", "Release" }
-			targetdir "bin/x64/Release/3rd-party"
 	
 	-- Lua dependency (shared library)
 	project "lua-shared"
@@ -138,14 +101,5 @@ solution "lua-data"
 		
 		defines { "_CRT_SECURE_NO_WARNINGS", "LUA_BUILD_AS_DLL" }
 		files { lua .. "/src/*.h", lua .. "/src/*.hpp", lua .. "/src/*.c" }
+		vpaths { ["*"] = lua }
 		excludes { lua .. "/src/lua.c" }
-		
-		-- Output folders
-		configuration { "x32", "Debug" }
-			targetdir "bin/x32/Debug/3rd-party"
-		configuration { "x32", "Release" }
-			targetdir "bin/x32/Release/3rd-party"
-		configuration { "x64", "Debug" }
-			targetdir "bin/x64/Debug/3rd-party"
-		configuration { "x64", "Release" }
-			targetdir "bin/x64/Release/3rd-party"

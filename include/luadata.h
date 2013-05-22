@@ -8,10 +8,12 @@
 namespace luadata {;
 
 // Implementation classes forward declaration
-class luadataimpl;
-class luavalueimpl;
+namespace impl {
+	class luadataimpl;
+	struct luavalueimpl;
+}
 
-LUADATA_API enum luatype {
+enum luatype {
 	nil,
 	boolean,
 	number,
@@ -22,38 +24,55 @@ LUADATA_API enum luatype {
 	table
 };
 
+enum loadfilemode {
+	automatic,
+	source,
+	binary
+};
+
 class LUADATA_API luavalue {
-	luavalueimpl *_pimpl;
+	impl::luavalueimpl *_pimpl;
 
 public:
-	operator float() const;
+	~luavalue();
+
 	operator double() const;
 	operator int() const;
 	operator std::string() const;
 	operator bool() const;
 
-	luavalue& operator[](const std::string& valuename) const;
+	//luavalue& operator[](const std::string& valuename) const;
 
 	luatype type() const;
+
+private:
+	luavalue(impl::luavalueimpl *impl);
+	luavalue(const luavalue&);
+	luavalue& operator=(const luavalue&);
+
+	friend class impl::luadataimpl;
+	friend class luadata;
 };
 
 /**
  * Access data stored in LUA files or preparsed LUA files.
  */
 class LUADATA_API luadata {
-	luadataimpl *_pimpl;
+	impl::luadataimpl *_pimpl;
 
 public:
-	luadata(const std::string &file);
+	luadata();
+	~luadata();
 
-	luavalue& operator[](const std::string& valuename) const;
+	bool loadfile(const std::string &name, const std::string &path, loadfilemode mode = automatic);
+	bool loadfile(const std::string &path, loadfilemode mode = automatic);
+
+	luavalue operator[](const std::string& valuename) const;
 
 private:
 	luadata(const luadata&);
 	const luadata& operator=(const luadata&);
 };
-
-static luavalue __val__;
 
 } // namespace luadata
 

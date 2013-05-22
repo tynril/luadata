@@ -5,40 +5,56 @@
 
 namespace luadata {;
 
-luavalue::operator float() const {
-	return 666.6f;
+luavalue::luavalue(impl::luavalueimpl *impl) :
+	_pimpl(impl) {
+}
+
+luavalue::~luavalue() {
+	delete _pimpl;
 }
 
 luavalue::operator double() const {
-	return 777.777;
+	return _pimpl->getdouble();
 }
 
 luavalue::operator int() const {
-	return 888;
+	return _pimpl->getint();
 }
 
 luavalue::operator std::string() const {
-	return "pouet";
+	return _pimpl->getstring();
 }
 
 luavalue::operator bool() const {
-	return false;
+	return _pimpl->getbool();
 }
 
-luavalue& luavalue::operator[](const std::string& valuename) const {
-	return __val__;
-}
+/*luavalue& luavalue::operator[](const std::string& valuename) const {
+	return _pimpl->gettable(valuename);
+}*/
 
 luatype luavalue::type() const {
-	return luatype::nil;
+	return _pimpl->type();
 }
 
-luadata::luadata(const std::string &file) {
-	_pimpl->pouet();
+luadata::luadata() :
+	_pimpl(new impl::luadataimpl()) {
 }
 
-luavalue& luadata::operator[](const std::string& valuename) const {
-	return __val__;
+luadata::~luadata() {
+	delete _pimpl;
+}
+
+bool luadata::loadfile(const std::string& name, const std::string& path, loadfilemode mode) {
+	return _pimpl->loadfile(name, path, mode);
+}
+
+bool luadata::loadfile(const std::string& path, loadfilemode mode) {
+	return _pimpl->loadfile(path, mode);
+}
+
+luavalue luadata::operator[](const std::string& valuename) const {
+	return _pimpl->get(valuename);
 }
 
 } // namespace luadata
