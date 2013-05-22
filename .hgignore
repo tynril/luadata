@@ -1,2 +1,4 @@
 syntax: glob
-_*
+bin
+obj
+projects
