@@ -16,8 +16,10 @@ int main() {
 	{
 	// Loading a LUA file.
 	luadata::luadata test;
-	if(!test.loadfile("./data/alltypes.lua", luadata::automatic))
+	if(!test.loadfile("./data/alltypes.lua", luadata::automatic)) {
 		std::cout << "Failed." << std::endl;
+		return 1;
+	}
 
 	double double_value = test["float_value"].asdouble();
 	std::cout << "double_value:                " << double_value << std::endl;
@@ -61,6 +63,9 @@ int main() {
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 
 	std::cout << "time_value:                  " << time_value.asstring() << std::endl;
+
+	int integer_value2 = test["integer_value"].asint();
+	std::cout << "integer_value:               " << integer_value2 << std::endl;
 	
 	}
 	std::cin.get();

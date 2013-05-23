@@ -2,7 +2,6 @@
 	Test file for all the different kind of values that
 	luadata can handle.
 ]]--
-time_value = function() return os.date("%A %B %d %Y, at %I:%M:%S%p") end
 float_value = 3.14159
 integer_value = 42
 string_value = "test"
@@ -30,4 +29,8 @@ function_three_layers = function()
 end
 function_with_arg_value = function(x)
 	return x * x
+end
+time_value = function()
+	integer_value = integer_value + 1
+	return os.date("%A %B %d %Y, at %I:%M:%S%p")
 end
