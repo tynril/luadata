@@ -43,23 +43,28 @@ enum loadfilemode {
  */
 class LUADATA_API luavalue {
 	impl::luavalueimpl *_pimpl;
+	unsigned int *_refCount;
 
 public:
+	luavalue(const luavalue &other);
 	~luavalue();
 
-	/** Gets the value as a double. */
+	/** Assignation. */
+	luavalue& operator=(const luavalue& rhs);
+
+#if (defined LUADATA_LIB || defined LUADATA_IMPLICIT_CAST)
+	/** Gets the value with an implicit casting. */
 	operator double() const;
-
-	/** Gets the value as an integer. */
 	operator int() const;
-
-	/** Gets the value as a string. */
 	operator std::string() const;
-
-	/** Gets the value as a boolean. */
 	operator bool() const;
+#endif
 
-	//luavalue& operator[](const std::string& valuename) const;
+	/** Gets the value with an explicit casting. */
+	double asdouble() const;
+	int asint() const;
+	std::string asstring() const;
+	bool asbool() const;
 
 	/** Gets the Lua type of the value. */
 	luatype type() const;
@@ -67,10 +72,6 @@ public:
 private:
 	/** Construction is done by the implementation. */
 	luavalue(impl::luavalueimpl *impl);
-
-	/** Copy is forbidden. */
-	luavalue(const luavalue&);
-	luavalue& operator=(const luavalue&);
 
 	friend class impl::luadataimpl;
 	friend class luadata;
@@ -96,8 +97,8 @@ public:
 	/** Saves every loaded data files to a binary data file. */
 	bool savefile(const std::string &path);
 
-	/** Access a value defined in one of the loaded files. */
-	luavalue operator[](const std::string& valuename) const;
+	/** Get a value in the data tree. */
+	luavalue operator[](const std::string& name) const;
 
 private:
 	/** Copy is disabled. */

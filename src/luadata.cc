@@ -6,11 +6,45 @@
 namespace luadata {;
 
 luavalue::luavalue(impl::luavalueimpl *impl) :
-	_pimpl(impl) {
+	_pimpl(impl),
+	_refCount(new unsigned int(1)) {
+}
+
+luavalue::luavalue(const luavalue &other) :
+	_pimpl(other._pimpl),
+	_refCount(other._refCount) {
+	*_refCount ++;
 }
 
 luavalue::~luavalue() {
-	delete _pimpl;
+	if(*_refCount == 1) {
+		delete _pimpl;
+		delete _refCount;
+	}
+	else {
+		*_refCount --;
+	}
+}
+
+luavalue& luavalue::operator=(const luavalue& rhs) {
+	// Fallback for self-assignation.
+	if(_pimpl == rhs._pimpl) return *this;
+
+	// Drop our current implementation.
+	if(*_refCount == 1) {
+		delete _pimpl;
+		delete _refCount;
+	}
+	else {
+		*_refCount --;
+	}
+
+	// Assign the new one.
+	_pimpl = rhs._pimpl;
+	_refCount = rhs._refCount;
+	*_refCount ++;
+
+	return *this;
 }
 
 luavalue::operator double() const {
@@ -29,9 +63,21 @@ luavalue::operator bool() const {
 	return _pimpl->getbool();
 }
 
-/*luavalue& luavalue::operator[](const std::string& valuename) const {
-	return _pimpl->gettable(valuename);
-}*/
+double luavalue::asdouble() const {
+	return _pimpl->getdouble();
+}
+
+int luavalue::asint() const {
+	return _pimpl->getint();
+}
+
+std::string luavalue::asstring() const {
+	return _pimpl->getstring();
+}
+
+bool luavalue::asbool() const {
+	return _pimpl->getbool();
+}
 
 luatype luavalue::type() const {
 	return _pimpl->type();
@@ -53,8 +99,8 @@ bool luadata::savefile(const std::string &path) {
 	return _pimpl->savefile(path);
 }
 
-luavalue luadata::operator[](const std::string &valuename) const {
-	return _pimpl->get(valuename);
+luavalue luadata::operator[](const std::string &name) const {
+	return _pimpl->get(name);
 }
 
 } // namespace luadata
