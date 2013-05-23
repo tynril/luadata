@@ -4,6 +4,12 @@
 
 #include <luadata.h>
 
+// TODO:
+//  - Implement function call (operator() on luavalue, with a luaarg
+//    type wrapping various value types)
+//  - Implement hot-reloading
+//  - Implement chunk serialization
+
 int main() {
 	{
 	// Loading a LUA file.
@@ -54,8 +60,8 @@ int main() {
 	int function_three_layers = test["function_three_layers"].asint();
 	std::cout << "function_three_layers:       " << function_three_layers << std::endl;
 
-	int function_with_arg_value = test["function_with_arg_value"].asint();
-	std::cout << "function_with_arg_value:     " << function_with_arg_value << std::endl;
+	int function_with_arg_value_wo_arg = test["function_with_arg_value"].asint();
+	std::cout << "function_with_arg_value_wo_arg: " << function_with_arg_value_wo_arg << std::endl;
 
 	luadata::luavalue time_value = test["time_value"];
 
