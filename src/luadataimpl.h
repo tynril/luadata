@@ -56,10 +56,10 @@ public:
 	luavalue get(const std::string &valuename);
 
 	/** Gets the real value from a global Lua variable. */
-	template<typename T> T retrieve(const std::string &valuename);
+	template<typename T> inline T retrieve(const std::string &valuename);
 
 	/** Check if a global Lua variable is nil. */
-	bool isnil(const std::string &valuename);
+	inline bool isnil(const std::string &valuename);
 
 private:
 	/** Loads a binary file and put it in a chunk with the given name. */
@@ -69,7 +69,7 @@ private:
 	bool loadsourcefile(const std::string &path);
 
 	/** Gets a luavalue from the top of the stack. */
-	template<typename T> T getfromstack();
+	template<typename T> inline T getfromstack();
 	
 	/** Static function used by lua_dump to  */
 	static int luawriter(lua_State *L, const void *chunk, size_t size, void *userChunk);

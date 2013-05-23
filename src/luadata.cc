@@ -108,7 +108,7 @@ bool luadata::savefile(const std::string &path) {
 	return _pimpl->savefile(path);
 }
 
-luavalue luadata::operator[](const std::string &name) const {
+inline luavalue luadata::operator[](const std::string &name) const {
 	return _pimpl->get(name);
 }
 

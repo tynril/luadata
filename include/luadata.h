@@ -105,7 +105,7 @@ public:
 	bool savefile(const std::string &path);
 
 	/** Get a value in the data tree. */
-	luavalue operator[](const std::string& name) const;
+	inline luavalue operator[](const std::string& name) const;
 
 private:
 	/** Copy is disabled. */

@@ -70,7 +70,7 @@ luavalue luadataimpl::get(const std::string &valuename) {
 }
 
 template<typename T>
-T luadataimpl::retrieve(const std::string &valuename) {
+inline T luadataimpl::retrieve(const std::string &valuename) {
 	// Put the value at the top of the stack.
 	lua_getglobal(L, valuename.c_str());
 
@@ -85,7 +85,7 @@ T luadataimpl::retrieve(const std::string &valuename) {
 }
 
 template<>
-double luadataimpl::getfromstack() {
+inline double luadataimpl::getfromstack() {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -113,7 +113,7 @@ double luadataimpl::getfromstack() {
 }
 
 template<>
-int luadataimpl::getfromstack() {
+inline int luadataimpl::getfromstack() {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -141,7 +141,7 @@ int luadataimpl::getfromstack() {
 }
 
 template<>
-std::string luadataimpl::getfromstack() {
+inline std::string luadataimpl::getfromstack() {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -170,7 +170,7 @@ std::string luadataimpl::getfromstack() {
 }
 
 template<>
-bool luadataimpl::getfromstack() {
+inline bool luadataimpl::getfromstack() {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -198,7 +198,7 @@ bool luadataimpl::getfromstack() {
 	}
 }
 
-bool luadataimpl::isnil(const std::string &valuename) {
+inline bool luadataimpl::isnil(const std::string &valuename) {
 	// Put the value at the top of the stack.
 	lua_getglobal(L, valuename.c_str());
 
