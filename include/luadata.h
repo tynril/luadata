@@ -75,7 +75,11 @@ private:
 
 	friend class impl::luadataimpl;
 	friend class luadata;
+	friend void swap(luavalue& lhs, luavalue& rhs);
 };
+
+/** Swap method for luavalues. */
+void swap(luavalue& lhs, luavalue& rhs);
 
 /**
  * This is the central class providing all features of the

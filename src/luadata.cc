@@ -83,6 +83,11 @@ luatype luavalue::type() const {
 	return _pimpl->type();
 }
 
+void swap(luavalue& lhs, luavalue& rhs) {
+	std::swap(lhs._pimpl, rhs._pimpl);
+	std::swap(lhs._refCount, rhs._refCount);
+}
+
 luadata::luadata() :
 	_pimpl(new impl::luadataimpl()) {
 }
