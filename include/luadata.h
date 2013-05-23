@@ -54,23 +54,23 @@ public:
 
 #if (defined LUADATA_LIB || defined LUADATA_IMPLICIT_CAST)
 	/** Gets the value with an implicit casting. */
-	operator double() const;
-	operator int() const;
-	operator std::string() const;
-	operator bool() const;
+	inline operator double() const;
+	inline operator int() const;
+	inline operator std::string() const;
+	inline operator bool() const;
 #endif
 
 	/** Gets the value with an explicit casting. */
-	double asdouble() const;
-	int asint() const;
-	std::string asstring() const;
-	bool asbool() const;
+	inline double asdouble() const;
+	inline int asint() const;
+	inline std::string asstring() const;
+	inline bool asbool() const;
 
 	/** Checks if this is a nil value. */
-	bool isnil() const;
+	inline bool isnil() const;
 
 	/** Gets the Lua type of the value. */
-	luatype type() const;
+	inline luatype type() const;
 
 private:
 	/** Construction is done by the implementation. */

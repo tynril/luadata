@@ -47,43 +47,43 @@ luavalue& luavalue::operator=(const luavalue& rhs) {
 	return *this;
 }
 
-luavalue::operator double() const {
+inline luavalue::operator double() const {
 	return _pimpl->getdouble();
 }
 
-luavalue::operator int() const {
+inline luavalue::operator int() const {
 	return _pimpl->getint();
 }
 
-luavalue::operator std::string() const {
+inline luavalue::operator std::string() const {
 	return _pimpl->getstring();
 }
 
-luavalue::operator bool() const {
+inline luavalue::operator bool() const {
 	return _pimpl->getbool();
 }
 
-double luavalue::asdouble() const {
+inline double luavalue::asdouble() const {
 	return _pimpl->getdouble();
 }
 
-int luavalue::asint() const {
+inline int luavalue::asint() const {
 	return _pimpl->getint();
 }
 
-std::string luavalue::asstring() const {
+inline std::string luavalue::asstring() const {
 	return _pimpl->getstring();
 }
 
-bool luavalue::asbool() const {
+inline bool luavalue::asbool() const {
 	return _pimpl->getbool();
 }
 
-bool luavalue::isnil() const {
+inline bool luavalue::isnil() const {
 	return _pimpl->isnil();
 }
 
-luatype luavalue::type() const {
+inline luatype luavalue::type() const {
 	return _pimpl->type();
 }
 
