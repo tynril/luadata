@@ -66,22 +66,40 @@ bool luadataimpl::loadsourcefile(const std::string &path) {
 }
 
 luavalue luadataimpl::get(const std::string &valuename) {
-	return luavalue(new luavalueimpl(valuename, this));
+	return luavalue(new luavalueimpl(luapath(1, luapathelement(valuename)), this));
 }
 
 template<typename T>
-inline T luadataimpl::retrieve(const std::string &valuename) {
-	// Put the value at the top of the stack.
-	lua_getglobal(L, valuename.c_str());
+inline T luadataimpl::retrieve(const luapath &valuepath) {
+	// Gets the value at the front of the stack.
+	getpath(valuepath);
 
 	// Read it.
 	T value = getfromstack<T>();
 
-	// Removes the value from the stack.
-	lua_pop(L, 1);
+	// Clears the stack.
+	clearstack();
 
-	// And returns it.
+	// And returns the value.
 	return value;
+}
+
+inline void luadataimpl::getpath(const luapath &valuepath) {
+	// Gets the first element of the path to the front.
+	lua_getglobal(L, valuepath[0].key.c_str());
+
+	// If we still have path elements, and if the value is a table, dig in.
+	for(unsigned int i = 1; i < valuepath.size() && lua_istable(L, -1); ++ i) {
+		if(valuepath[i].type == key_t)
+			lua_pushstring(L, valuepath[i].key.c_str());
+		else
+			lua_pushinteger(L, valuepath[i].index + 1);
+		lua_gettable(L, -2);
+	}
+}
+
+inline void luadataimpl::clearstack() {
+	lua_pop(L, lua_gettop(L));
 }
 
 template<>
@@ -97,12 +115,11 @@ inline double luadataimpl::getfromstack() {
 		return lua_tonumber(L, -1);
 	case LUA_TSTRING:
 		return 0.0;
-	case LUA_TTABLE:
-		throw std::runtime_error("Not yet implemented.");
 	case LUA_TFUNCTION:
-		// Call the function and gets its 1st result.
 		lua_pcall(L, 0, 1, 0);
 		return getfromstack<double>();
+	case LUA_TTABLE:
+		return luaL_len(L, -1);
 	case LUA_TNIL:
 	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
@@ -125,12 +142,11 @@ inline int luadataimpl::getfromstack() {
 		return (int)lua_tonumber(L, -1);
 	case LUA_TSTRING:
 		return 0;
-	case LUA_TTABLE:
-		throw std::runtime_error("Not yet implemented.");
 	case LUA_TFUNCTION:
-		// Call the function and gets its 1st result.
 		lua_pcall(L, 0, 1, 0);
 		return getfromstack<int>();
+	case LUA_TTABLE:
+		return luaL_len(L, -1);
 	case LUA_TNIL:
 	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
@@ -153,14 +169,13 @@ inline std::string luadataimpl::getfromstack() {
 		return std::to_string(lua_tonumber(L, -1));
 	case LUA_TSTRING:
 		return lua_tostring(L, -1);
-	case LUA_TTABLE:
-		throw std::runtime_error("Not yet implemented.");
 	case LUA_TFUNCTION:
-		// Call the function and gets its 1st result.
 		lua_pcall(L, 0, 1, 0);
 		return getfromstack<std::string>();
 	case LUA_TNIL:
 		return "nil";
+	case LUA_TTABLE:
+		return "table";
 	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
 	case LUA_TTHREAD:
@@ -183,9 +198,8 @@ inline bool luadataimpl::getfromstack() {
 	case LUA_TSTRING:
 		return !std::string(lua_tostring(L, -1)).empty();
 	case LUA_TTABLE:
-		throw std::runtime_error("Not yet implemented.");
+		return luaL_len(L, -1) != 0;
 	case LUA_TFUNCTION:
-		// Call the function and gets its 1st result.
 		lua_pcall(L, 0, 1, 0);
 		return getfromstack<bool>();
 	case LUA_TNIL:
@@ -198,17 +212,68 @@ inline bool luadataimpl::getfromstack() {
 	}
 }
 
-inline bool luadataimpl::isnil(const std::string &valuename) {
-	// Put the value at the top of the stack.
-	lua_getglobal(L, valuename.c_str());
+inline luatype luadataimpl::type(const luapath &valuepath) {
+	// Gets the value at the front of the stack.
+	getpath(valuepath);
 
-	// Check if it's nil.
-	bool isnil = lua_isnil(L, -1);
+	// Gets its type.
+	int luaType = lua_type(L, 1);
+	luatype type = nil;
+	switch(luaType) {
+	case LUA_TBOOLEAN:	type = boolean;		break;
+	case LUA_TNUMBER:	type = number;		break;
+	case LUA_TSTRING:	type = string;		break;
+	case LUA_TTABLE:	type = table;		break;
+	case LUA_TFUNCTION:	type = function;	break;
+	case LUA_TNIL:		type = nil;			break;
+	case LUA_TLIGHTUSERDATA:
+	case LUA_TUSERDATA:	type = userdata;	break;
+	case LUA_TTHREAD:	type = thread;		break;
+	}
 
-	// Removes it from the stack.
-	lua_pop(L, 1);
+	// Clears the stack.
+	clearstack();
 
-	return isnil;
+	// And returns the value.
+	return type;
+}
+
+inline std::size_t luadataimpl::tablelen(const luapath &valuepath) {
+	// Gets the value at the front of the stack.
+	getpath(valuepath);
+
+	// Gets the table length.
+	std::size_t len = 0;
+	if(lua_istable(L, -1)) {
+		len = luaL_len(L, -1);
+	}
+
+	// Clears the stack.
+	clearstack();
+
+	// And returns the length.
+	return len;
+}
+
+inline std::vector<std::string> luadataimpl::tablekeys(const luapath &valuepath) {
+	// Gets the value at the front of the stack.
+	getpath(valuepath);
+
+	// Gets the table keys.
+	std::vector<std::string> keys;
+	if(lua_istable(L, -1)) {
+		lua_pushnil(L);
+		while(lua_next(L, -2)) {
+			keys.push_back(lua_tostring(L, -2));
+			lua_pop(L, 1);
+		}
+	}
+
+	// Clears the stack.
+	clearstack();
+
+	// And returns the keys.
+	return keys;
 }
 
 int luadataimpl::luawriter(lua_State *L, const void *chunk, std::size_t size, void *userChunkPtr) {
@@ -218,33 +283,49 @@ int luadataimpl::luawriter(lua_State *L, const void *chunk, std::size_t size, vo
 	return 0;
 }
 
-luavalueimpl::luavalueimpl(const std::string &name, luadataimpl *data) :
-	_name(name),
+luavalueimpl::luavalueimpl(const luapath &valuepath, luadataimpl *data) :
+	_valuepath(valuepath),
 	_data(data) {
 }
 
 double luavalueimpl::getdouble() const {
-	return _data->retrieve<double>(_name);
+	return _data->retrieve<double>(_valuepath);
 }
 
 int luavalueimpl::getint() const {
-	return _data->retrieve<int>(_name);
+	return _data->retrieve<int>(_valuepath);
 }
 
 std::string luavalueimpl::getstring() const {
-	return _data->retrieve<std::string>(_name);
+	return _data->retrieve<std::string>(_valuepath);
 }
 
 bool luavalueimpl::getbool() const {
-	return _data->retrieve<bool>(_name);
+	return _data->retrieve<bool>(_valuepath);
 }
 
-bool luavalueimpl::isnil() const {
-	return _data->isnil(_name);
+std::size_t luavalueimpl::tablelen() const {
+	return _data->tablelen(_valuepath);
+}
+
+std::vector<std::string> luavalueimpl::tablekeys() const {
+	return _data->tablekeys(_valuepath);
+}
+
+luavalue luavalueimpl::tableval(const std::string &keyval) const {
+	luapath appendedPath(_valuepath);
+	appendedPath.push_back(luapathelement(keyval));
+	return luavalue(new luavalueimpl(appendedPath, _data));
+}
+
+luavalue luavalueimpl::tableval(const int &indexval) const {
+	luapath appendedPath(_valuepath);
+	appendedPath.push_back(luapathelement(indexval));
+	return luavalue(new luavalueimpl(appendedPath, _data));
 }
 
 luatype luavalueimpl::type() const {
-	return nil;
+	return _data->type(_valuepath);
 }
 
 }} // namespaces

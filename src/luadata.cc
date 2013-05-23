@@ -79,8 +79,20 @@ inline bool luavalue::asbool() const {
 	return _pimpl->getbool();
 }
 
-inline bool luavalue::isnil() const {
-	return _pimpl->isnil();
+inline std::size_t luavalue::tablelen() const {
+	return _pimpl->tablelen();
+}
+
+inline std::vector<std::string> luavalue::tablekeys() const {
+	return _pimpl->tablekeys();
+}
+
+inline luavalue luavalue::operator[](const std::string &keyname) const {
+	return _pimpl->tableval(keyname);
+}
+
+inline luavalue luavalue::operator[](const int &keyindex) const {
+	return _pimpl->tableval(keyindex);
 }
 
 inline luatype luavalue::type() const {

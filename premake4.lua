@@ -56,7 +56,7 @@ solution "lua-data"
 		
 		-- Lua dependency
 		includedirs { lua .. "/src" }
-		links { "lua-shared" }
+		links { "lua-static" }
 	
 	-- Test project (statically linked)
 	project "lua-data-test-static"
@@ -90,16 +90,6 @@ solution "lua-data"
 		kind "StaticLib"
 		
 		defines { "_CRT_SECURE_NO_WARNINGS" }
-		files { lua .. "/src/*.h", lua .. "/src/*.hpp", lua .. "/src/*.c" }
-		vpaths { ["*"] = lua }
-		excludes { lua .. "/src/lua.c" }
-	
-	-- Lua dependency (shared library)
-	project "lua-shared"
-		language "C++"
-		kind "SharedLib"
-		
-		defines { "_CRT_SECURE_NO_WARNINGS", "LUA_BUILD_AS_DLL" }
 		files { lua .. "/src/*.h", lua .. "/src/*.hpp", lua .. "/src/*.c" }
 		vpaths { ["*"] = lua }
 		excludes { lua .. "/src/lua.c" }

@@ -2,6 +2,7 @@
 #define _LUADATA_H_
 
 #include <string>
+#include <vector>
 
 #include "luadataconf.h"
 
@@ -66,8 +67,19 @@ public:
 	inline std::string asstring() const;
 	inline bool asbool() const;
 
-	/** Checks if this is a nil value. */
-	inline bool isnil() const;
+	/** Gets the length of the (unassociative) table, or 0
+	    if it is an associative table or another value. */
+	inline std::size_t tablelen() const;
+
+	/** Gets the list of the keys in the associative table,
+	    or an empty vector for another value. */
+	inline std::vector<std::string> tablekeys() const;
+
+	/** Gets the value at the given table key. */
+	inline luavalue operator[](const std::string &keyname) const;
+
+	/** Gets the value at the given table index. */
+	inline luavalue operator[](const int &keyindex) const;
 
 	/** Gets the Lua type of the value. */
 	inline luatype type() const;
@@ -77,6 +89,7 @@ private:
 	luavalue(impl::luavalueimpl *impl);
 
 	friend class impl::luadataimpl;
+	friend class impl::luavalueimpl;
 	friend class luadata;
 	friend void swap(luavalue& lhs, luavalue& rhs);
 };

@@ -4,15 +4,7 @@
 
 #include <luadata.h>
 
-// TODO :
-//  - Remove the implicit cast feature, which sucks
-//    - Maybe some template-based return?
-//  - Works with copyable/movable/assignable promises to retrieve the value
-//    which gets the value at the last possible time instead, to facilitate
-//    usage of hot-reload
-
 int main() {
-
 	{
 	// Loading a LUA file.
 	luadata::luadata test;
@@ -20,6 +12,17 @@ int main() {
 		std::cout << "Failed." << std::endl;
 		return 1;
 	}
+
+	int int_from_array = test["table_list_mixed_value"][0].asint();
+	std::cout << "int_from_array:             " << int_from_array << std::endl;
+
+	luadata::luavalue t = test["table_assoc_value"];
+	for(std::string s : t.tablekeys()) {
+		std::cout << s << ": " << t[s].asstring() << std::endl;
+	}
+
+	std::string string_from_assoc_array = test["table_assoc_value"]["a"].asstring();
+	std::cout << "string_from_assoc_array:     " << string_from_assoc_array << std::endl;
 
 	double double_value = test["float_value"].asdouble();
 	std::cout << "double_value:                " << double_value << std::endl;

@@ -9,7 +9,7 @@ boolean_value = true
 nil_value = nil
 table_empty_value = {}
 table_list_string_value = {"a", "b", "c"}
-table_list_mixed_value = {1, "a", true}
+table_list_mixed_value = {12, "a", true}
 table_assoc_value = {a="A", b="B", c="C"}
 function_value = function()
 	return 42
