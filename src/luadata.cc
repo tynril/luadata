@@ -79,6 +79,10 @@ bool luavalue::asbool() const {
 	return _pimpl->getbool();
 }
 
+bool luavalue::isnil() const {
+	return _pimpl->isnil();
+}
+
 luatype luavalue::type() const {
 	return _pimpl->type();
 }

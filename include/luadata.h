@@ -66,6 +66,9 @@ public:
 	std::string asstring() const;
 	bool asbool() const;
 
+	/** Checks if this is a nil value. */
+	bool isnil() const;
+
 	/** Gets the Lua type of the value. */
 	luatype type() const;
 

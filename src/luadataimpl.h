@@ -58,7 +58,8 @@ public:
 	/** Gets the real value from a global Lua variable. */
 	template<typename T> T retrieve(const std::string &valuename);
 
-	
+	/** Check if a global Lua variable is nil. */
+	bool isnil(const std::string &valuename);
 
 private:
 	/** Loads a binary file and put it in a chunk with the given name. */
@@ -86,19 +87,22 @@ public:
 	luavalueimpl(const std::string &name, luadataimpl *data);
 
 	/** Get the underlying value as a double. */
-	double getdouble();
+	double getdouble() const;
 
 	/** Get the underlying value as an integer. */
-	int getint();
+	int getint() const;
 
 	/** Get the underlying value as a string. */
-	std::string getstring();
+	std::string getstring() const;
 
 	/** Get the underlying value as a boolean. */
-	bool getbool();
+	bool getbool() const;
+
+	/** Check if the value is a nil value. */
+	bool isnil() const;
 
 	/** Get the type of the underlying value. */
-	luatype type();
+	luatype type() const;
 
 private:
 

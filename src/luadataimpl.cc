@@ -198,6 +198,19 @@ bool luadataimpl::getfromstack() {
 	}
 }
 
+bool luadataimpl::isnil(const std::string &valuename) {
+	// Put the value at the top of the stack.
+	lua_getglobal(L, valuename.c_str());
+
+	// Check if it's nil.
+	bool isnil = lua_isnil(L, -1);
+
+	// Removes it from the stack.
+	lua_pop(L, 1);
+
+	return isnil;
+}
+
 int luadataimpl::luawriter(lua_State *L, const void *chunk, std::size_t size, void *userChunkPtr) {
 	luachunk *userChunk = static_cast<luachunk*>(userChunkPtr);
 	const uint8_t *newData = static_cast<const uint8_t*>(chunk);
@@ -210,23 +223,27 @@ luavalueimpl::luavalueimpl(const std::string &name, luadataimpl *data) :
 	_data(data) {
 }
 
-double luavalueimpl::getdouble() {
+double luavalueimpl::getdouble() const {
 	return _data->retrieve<double>(_name);
 }
 
-int luavalueimpl::getint() {
+int luavalueimpl::getint() const {
 	return _data->retrieve<int>(_name);
 }
 
-std::string luavalueimpl::getstring() {
+std::string luavalueimpl::getstring() const {
 	return _data->retrieve<std::string>(_name);
 }
 
-bool luavalueimpl::getbool() {
+bool luavalueimpl::getbool() const {
 	return _data->retrieve<bool>(_name);
 }
 
-luatype luavalueimpl::type() {
+bool luavalueimpl::isnil() const {
+	return _data->isnil(_name);
+}
+
+luatype luavalueimpl::type() const {
 	return nil;
 }
 
