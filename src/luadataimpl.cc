@@ -66,54 +66,136 @@ bool luadataimpl::loadsourcefile(const std::string &path) {
 }
 
 luavalue luadataimpl::get(const std::string &valuename) {
+	return luavalue(new luavalueimpl(valuename, this));
+}
+
+template<typename T>
+T luadataimpl::retrieve(const std::string &valuename) {
 	// Put the value at the top of the stack.
 	lua_getglobal(L, valuename.c_str());
 
 	// Read it.
-	luavalueimpl *value = getfromstack();
+	T value = getfromstack<T>();
 
 	// Removes the value from the stack.
 	lua_pop(L, 1);
 
 	// And returns it.
-	return luavalue(value);
+	return value;
 }
 
-luavalueimpl * luadataimpl::getfromstack() {
+template<>
+double luadataimpl::getfromstack() {
 	// Get the value type.
 	int type = lua_type(L, -1);
-
-	// Creates the proper implementation.
-	luavalueimpl *vimpl = nullptr;
 
 	// Loads the value with data depending on the type.
 	switch(type) {
 	case LUA_TBOOLEAN:
-		vimpl = new boolluavalueimpl(lua_toboolean(L, -1) != 0);
-		break;
+		return lua_toboolean(L, -1) != 0 ? 1.0 : 0.0;
 	case LUA_TNUMBER:
-		vimpl = new numberluavalueimpl(lua_tonumber(L, -1));
-		break;
+		return lua_tonumber(L, -1);
 	case LUA_TSTRING:
-		vimpl = new stringluavalueimpl(lua_tostring(L, -1));
-		break;
+		return 0.0;
 	case LUA_TTABLE:
 		throw std::runtime_error("Not yet implemented.");
-		break;
 	case LUA_TFUNCTION:
 		// Call the function and gets its 1st result.
 		lua_pcall(L, 0, 1, 0);
-		vimpl = getfromstack();
-		break;
+		return getfromstack<double>();
+	case LUA_TNIL:
 	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
 	case LUA_TTHREAD:
-	case LUA_TNIL:
-		vimpl = new nilluavalueimpl();
-		break;
+	default:
+		return 0.0;
 	}
+}
 
-	return vimpl;
+template<>
+int luadataimpl::getfromstack() {
+	// Get the value type.
+	int type = lua_type(L, -1);
+
+	// Loads the value with data depending on the type.
+	switch(type) {
+	case LUA_TBOOLEAN:
+		return lua_toboolean(L, -1) != 0 ? 1 : 0;
+	case LUA_TNUMBER:
+		return (int)lua_tonumber(L, -1);
+	case LUA_TSTRING:
+		return 0;
+	case LUA_TTABLE:
+		throw std::runtime_error("Not yet implemented.");
+	case LUA_TFUNCTION:
+		// Call the function and gets its 1st result.
+		lua_pcall(L, 0, 1, 0);
+		return getfromstack<int>();
+	case LUA_TNIL:
+	case LUA_TLIGHTUSERDATA:
+	case LUA_TUSERDATA:
+	case LUA_TTHREAD:
+	default:
+		return 0;
+	}
+}
+
+template<>
+std::string luadataimpl::getfromstack() {
+	// Get the value type.
+	int type = lua_type(L, -1);
+
+	// Loads the value with data depending on the type.
+	switch(type) {
+	case LUA_TBOOLEAN:
+		return lua_toboolean(L, -1) != 0 ? "true" : "false";
+	case LUA_TNUMBER:
+		return std::to_string(lua_tonumber(L, -1));
+	case LUA_TSTRING:
+		return lua_tostring(L, -1);
+	case LUA_TTABLE:
+		throw std::runtime_error("Not yet implemented.");
+	case LUA_TFUNCTION:
+		// Call the function and gets its 1st result.
+		lua_pcall(L, 0, 1, 0);
+		return getfromstack<std::string>();
+	case LUA_TNIL:
+		return "nil";
+	case LUA_TLIGHTUSERDATA:
+	case LUA_TUSERDATA:
+	case LUA_TTHREAD:
+	default:
+		return 0;
+	}
+}
+
+template<>
+bool luadataimpl::getfromstack() {
+	// Get the value type.
+	int type = lua_type(L, -1);
+
+	// Loads the value with data depending on the type.
+	switch(type) {
+	case LUA_TBOOLEAN:
+		return lua_toboolean(L, -1) != 0;
+	case LUA_TNUMBER:
+		return lua_tonumber(L, -1) != 0;
+	case LUA_TSTRING:
+		return !std::string(lua_tostring(L, -1)).empty();
+	case LUA_TTABLE:
+		throw std::runtime_error("Not yet implemented.");
+	case LUA_TFUNCTION:
+		// Call the function and gets its 1st result.
+		lua_pcall(L, 0, 1, 0);
+		return getfromstack<bool>();
+	case LUA_TNIL:
+		return false;
+	case LUA_TLIGHTUSERDATA:
+	case LUA_TUSERDATA:
+	case LUA_TTHREAD:
+	default:
+		return 0;
+	}
 }
 
 int luadataimpl::luawriter(lua_State *L, const void *chunk, std::size_t size, void *userChunkPtr) {
@@ -121,6 +203,31 @@ int luadataimpl::luawriter(lua_State *L, const void *chunk, std::size_t size, vo
 	const uint8_t *newData = static_cast<const uint8_t*>(chunk);
 	userChunk->insert(userChunk->end(), newData, newData + size);
 	return 0;
+}
+
+luavalueimpl::luavalueimpl(const std::string &name, luadataimpl *data) :
+	_name(name),
+	_data(data) {
+}
+
+double luavalueimpl::getdouble() {
+	return _data->retrieve<double>(_name);
+}
+
+int luavalueimpl::getint() {
+	return _data->retrieve<int>(_name);
+}
+
+std::string luavalueimpl::getstring() {
+	return _data->retrieve<std::string>(_name);
+}
+
+bool luavalueimpl::getbool() {
+	return _data->retrieve<bool>(_name);
+}
+
+luatype luavalueimpl::type() {
+	return nil;
 }
 
 }} // namespaces

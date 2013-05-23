@@ -52,7 +52,13 @@ public:
 	/** Saves a binary file with all the loaded data. */
 	bool savefile(const std::string &path);
 
+	/** Get a future value bound to this data implementation. */
 	luavalue get(const std::string &valuename);
+
+	/** Gets the real value from a global Lua variable. */
+	template<typename T> T retrieve(const std::string &valuename);
+
+	
 
 private:
 	/** Loads a binary file and put it in a chunk with the given name. */
@@ -62,7 +68,7 @@ private:
 	bool loadsourcefile(const std::string &path);
 
 	/** Gets a luavalue from the top of the stack. */
-	luavalueimpl * getfromstack();
+	template<typename T> T getfromstack();
 	
 	/** Static function used by lua_dump to  */
 	static int luawriter(lua_State *L, const void *chunk, size_t size, void *userChunk);
@@ -71,63 +77,31 @@ private:
 /**
  * Abstract implementation of a Lua value.
  */
-struct luavalueimpl {
+class luavalueimpl {
+	const std::string _name;
+	luadataimpl *_data;
+
+public:
+	/** Builds a new value promise, bound to the given data implementation. */
+	luavalueimpl(const std::string &name, luadataimpl *data);
+
 	/** Get the underlying value as a double. */
-	virtual double getdouble() const = 0;
+	double getdouble();
 
 	/** Get the underlying value as an integer. */
-	virtual int getint() const = 0;
+	int getint();
 
 	/** Get the underlying value as a string. */
-	virtual std::string getstring() const = 0;
+	std::string getstring();
 
 	/** Get the underlying value as a boolean. */
-	virtual bool getbool() const = 0;
+	bool getbool();
 
 	/** Get the type of the underlying value. */
-	virtual luatype type() const = 0;
-};
+	luatype type();
 
-/** nil value */
-struct nilluavalueimpl : public luavalueimpl {
-	double getdouble() const { return 0.0; }
-	int getint() const { return 0; }
-	std::string getstring() const { return "nil"; }
-	bool getbool() const { return false; }
-	luatype type() const { return nil; }
-};
+private:
 
-/** boolean value */
-struct boolluavalueimpl : public luavalueimpl {
-	bool _v;
-	boolluavalueimpl(bool v) : _v(v) {}
-	double getdouble() const { return _v ? 1.0 : 0.0; }
-	int getint() const { return _v ? 1 : 0; }
-	std::string getstring() const { return _v ? "true" : "false"; }
-	bool getbool() const { return _v; }
-	luatype type() const { return boolean; }
-};
-
-/** number value */
-struct numberluavalueimpl : public luavalueimpl {
-	double _v;
-	numberluavalueimpl(double v) : _v(v) {}
-	double getdouble() const { return _v; }
-	int getint() const { return (int)_v; }
-	std::string getstring() const { return std::to_string(_v); }
-	bool getbool() const { return _v != 0.0; }
-	luatype type() const { return number; }
-};
-
-/** string value */
-struct stringluavalueimpl : public luavalueimpl {
-	std::string _v;
-	stringluavalueimpl(std::string v) : _v(v) {}
-	double getdouble() const { return 0.0; }
-	int getint() const { return 0; }
-	std::string getstring() const { return _v; }
-	bool getbool() const { return !_v.empty(); }
-	luatype type() const { return string; }
 };
 
 }} // namespaces

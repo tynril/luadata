@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include <luadata.h>
 
@@ -50,6 +51,16 @@ int main() {
 
 	int function_with_arg_value = test["function_with_arg_value"].asint();
 	std::cout << "function_with_arg_value:     " << function_with_arg_value << std::endl;
+
+	luadata::luavalue time_value = test["time_value"];
+
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	std::cout << "time_value:                  " << time_value.asstring() << std::endl;
+
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+
+	std::cout << "time_value:                  " << time_value.asstring() << std::endl;
 	
 	}
 	std::cin.get();

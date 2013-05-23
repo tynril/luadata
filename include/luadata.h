@@ -10,7 +10,7 @@ namespace luadata {;
 // Implementation classes forward declaration
 namespace impl {
 	class luadataimpl;
-	struct luavalueimpl;
+	class luavalueimpl;
 }
 
 enum luatype {

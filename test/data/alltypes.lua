@@ -2,6 +2,7 @@
 	Test file for all the different kind of values that
 	luadata can handle.
 ]]--
+time_value = function() return os.date("%A %B %d %Y, at %I:%M:%S%p") end
 float_value = 3.14159
 integer_value = 42
 string_value = "test"
