@@ -49,6 +49,9 @@ public:
 	/** Loads a file (source or binary). */
 	bool loadfile(const std::string &path, loadfilemode mode = automatic);
 
+	/** Loads a string containing Lua code. */
+	bool loadcode(const std::string &code);
+
 	/** Saves a binary file with all the loaded data. */
 	bool savefile(const std::string &path);
 
@@ -73,6 +76,9 @@ private:
 
 	/** Loads a source file and put it in a chunk with the given name. */
 	bool loadsourcefile(const std::string &path);
+
+	/** Process a loaded chunk. */
+	bool processloadedchunk();
 
 	/** Puts a value from a path at the front of the stack, returns the number of pushed elements. */
 	inline void getpath(const luapath &valuepath);

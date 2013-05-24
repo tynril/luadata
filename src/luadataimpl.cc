@@ -31,6 +31,16 @@ bool luadataimpl::loadfile(const std::string &path, loadfilemode mode) {
 		return loadsourcefile(path);
 }
 
+bool luadataimpl::loadcode(const std::string &code) {
+	if(luaL_loadstring(L, code.c_str())) {
+		std::cerr << lua_tostring(L, -1) << std::endl;
+		lua_pop(L, 1);
+		return false;
+	}
+
+	return processloadedchunk();
+}
+
 bool luadataimpl::savefile(const std::string &path) {
 	// Not yet implemented.
 	return false;
@@ -49,6 +59,10 @@ bool luadataimpl::loadsourcefile(const std::string &path) {
 		return false;
 	}
 
+	return processloadedchunk();
+}
+
+bool luadataimpl::processloadedchunk() {
 	// There should be the chunk at the top of the stack now.
 	if(lua_gettop(L) != 1 || !lua_isfunction(L, 1))
 		return false;

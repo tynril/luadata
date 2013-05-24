@@ -194,6 +194,9 @@ public:
 	/** Loads a data file. */
 	bool loadfile(const std::string &path, loadfilemode mode = automatic);
 
+	/** Loads a string containing Lua source code. */
+	bool loadcode(const std::string &luacode);
+
 	/** Saves every loaded data files to a binary data file. */
 	bool savefile(const std::string &path);
 

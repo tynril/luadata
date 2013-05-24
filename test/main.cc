@@ -18,6 +18,9 @@ int main() {
 		return 1;
 	}
 
+	test.loadcode("loaded_from_code = {\"hell\", \"yeah\"}");
+	std::cout << "loaded_from_code:              " << test["loaded_from_code"] << std::endl;
+
 	int int_from_array = test["table_list_mixed_value"][0].asint();
 	std::cout << "int_from_array:                " << int_from_array << std::endl;
 

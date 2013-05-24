@@ -167,6 +167,10 @@ bool luadata::loadfile(const std::string &path, loadfilemode mode) {
 	return _pimpl->loadfile(path, mode);
 }
 
+bool luadata::loadcode(const std::string &code) {
+	return _pimpl->loadcode(code);
+}
+
 bool luadata::savefile(const std::string &path) {
 	return _pimpl->savefile(path);
 }
