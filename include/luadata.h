@@ -98,20 +98,6 @@ class luapathelement {
 typedef std::vector<luapathelement> luapath;
 
 /**
- * The different modes to open a data file.
- */
-enum loadfilemode {
-	/** Choose mode by looking at the extension (lua for source, anything else for data). */
-	automatic,
-
-	/** Loads the file as Lua source. */
-	source,
-
-	/** Loads the file as data binary. */
-	binary
-};
-
-/**
  * Represents a single value retrieved from Lua.
  */
 class luavalue {
@@ -192,13 +178,13 @@ public:
 	~luadata();
 
 	/** Loads a data file. */
-	bool loadfile(const std::string &path, loadfilemode mode = automatic);
+	bool loadfile(const std::string &path);
 
 	/** Loads a string containing Lua source code. */
 	bool loadcode(const std::string &luacode);
 
 	/** Saves every loaded data files to a binary data file. */
-	bool savefile(const std::string &path);
+	void dump(std::ostream& out);
 
 	/** Get a value in the data tree. */
 	luavalue operator[](const std::string& name) const;

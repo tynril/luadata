@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <fstream>
 
 #include <luadata.h>
 
@@ -12,7 +13,7 @@ int main() {
 	{
 	// Loading a LUA file.
 	luadata::luadata test;
-	if(!test.loadfile("./data/alltypes.lua", luadata::automatic)) {
+	if(!test.loadfile("./data/alltypes.lua")) {
 		std::cout << "Failed." << std::endl;
 		std::cin.get();
 		return 1;
@@ -88,6 +89,7 @@ int main() {
 	int function_with_arg_value_w_arg = test["function_with_arg_value"](12).asint();
 	std::cout << "function_with_arg_value_w_arg:  " << function_with_arg_value_w_arg << std::endl;
 
+	/*
 	luadata::luavalue time_value = test["time_value"];
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -100,6 +102,11 @@ int main() {
 
 	int integer_value2 = test["integer_value"].asint();
 	std::cout << "integer_value:                  " << integer_value2 << std::endl;
+	*/
+
+	std::fstream file("D:\\test.dat", std::ios_base::out | std::ios_base::binary);
+	test.dump(file);
+	file.close();
 	
 	}
 	std::cin.get();

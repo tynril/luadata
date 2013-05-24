@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
+#include <unordered_map>
 
 extern "C" {
 #include <lua.h>
@@ -37,7 +38,7 @@ class luadataimpl {
 	lua_State *L;
 
 	/** Map holding all loaded chunks. */
-	std::vector<luachunk> _chunks;
+	std::unordered_map<std::string, luachunk> _chunks;
 
 public:
 	/** The constructor creates a new Lua state. */
@@ -47,13 +48,13 @@ public:
 	~luadataimpl();
 
 	/** Loads a file (source or binary). */
-	bool loadfile(const std::string &path, loadfilemode mode = automatic);
+	bool loadfile(const std::string &path);
 
 	/** Loads a string containing Lua code. */
 	bool loadcode(const std::string &code);
 
-	/** Saves a binary file with all the loaded data. */
-	bool savefile(const std::string &path);
+	/** Dump chunks in a binary format to a stream. */
+	void dump(const std::string &name, std::ostream &out);
 
 	/** Gets the value of a Lua variable. */
 	double retrievedouble(const luapath &valuepath);
@@ -71,11 +72,6 @@ public:
 	std::vector<luakey> tablekeys(const luapath &valuepath);
 
 private:
-	/** Loads a binary file and put it in a chunk with the given name. */
-	bool loadbinaryfile(const std::string &path);
-
-	/** Loads a source file and put it in a chunk with the given name. */
-	bool loadsourcefile(const std::string &path);
 
 	/** Process a loaded chunk. */
 	bool processloadedchunk();

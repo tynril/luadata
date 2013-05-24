@@ -15,20 +15,15 @@ luadataimpl::~luadataimpl() {
 	lua_close(L);
 }
 
-bool luadataimpl::loadfile(const std::string &path, loadfilemode mode) {
-	// If the mode is automatic, it depends on file extension.
-	if(mode == automatic) {
-		if(path.rfind(".lua") == path.length() - 4)
-			mode = source;
-		else
-			mode = binary;
+bool luadataimpl::loadfile(const std::string &path) {
+	// Load the file in the state.
+	if(luaL_loadfile(L, path.c_str())) {
+		std::cerr << lua_tostring(L, -1) << std::endl;
+		lua_pop(L, 1);
+		return false;
 	}
 
-	// Load in the right mode.
-	if(mode == binary)
-		return loadbinaryfile(path);
-	else
-		return loadsourcefile(path);
+	return processloadedchunk();
 }
 
 bool luadataimpl::loadcode(const std::string &code) {
@@ -41,25 +36,9 @@ bool luadataimpl::loadcode(const std::string &code) {
 	return processloadedchunk();
 }
 
-bool luadataimpl::savefile(const std::string &path) {
-	// Not yet implemented.
-	return false;
-}
-
-bool luadataimpl::loadbinaryfile(const std::string &path) {
-	// Not yet implemented.
-	return false;
-}
-
-bool luadataimpl::loadsourcefile(const std::string &path) {
-	// Load the file in the state.
-	if(luaL_loadfile(L, path.c_str())) {
-		std::cerr << lua_tostring(L, -1) << std::endl;
-		lua_pop(L, 1);
-		return false;
-	}
-
-	return processloadedchunk();
+void luadataimpl::dump(const std::string &name, std::ostream &out) {
+	luachunk &chunk = _chunks[name];
+	std::copy(chunk.begin(), chunk.end(), std::ostream_iterator<uint8_t>(out));
 }
 
 bool luadataimpl::processloadedchunk() {
@@ -71,13 +50,11 @@ bool luadataimpl::processloadedchunk() {
 	luachunk chunk;
 	lua_dump(L, &luadataimpl::luawriter, &chunk);
 	chunk.shrink_to_fit();
+	_chunks["test"] = chunk;
 
 	// Runs the script directly.
 	if(lua_pcall(L, 0, 0, 0))
 		return false;
-
-	// Moves the chunk to its storage.
-	_chunks.push_back(std::move(chunk));
 
 	return true;
 }
