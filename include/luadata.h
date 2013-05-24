@@ -12,33 +12,76 @@ namespace impl {
 	class luavalueimpl;
 }
 
+/** Lua types that a luavalue can contain. */
 enum luatype {
-	nil,
-	boolean,
-	number,
-	string,
-	userdata,
-	function,
-	thread,
-	table
+	lua_nil,
+	lua_boolean,
+	lua_number,
+	lua_string,
+	lua_userdata,
+	lua_function,
+	lua_thread,
+	lua_table
 };
 
-/** Union structure for path elements. */
-enum luapathelementtype {
-	index_t,
-	key_t
+/** Structure that contains an argument to be passed to a Lua function. */
+struct luaarg {
+	enum {
+		a_undefined,
+		a_boolean,
+		a_double,
+		a_integer,
+		a_string
+	} type;
+	union {
+		bool b;
+		double d;
+		int n;
+	} simple_content;
+	std::string string_content;
+
+	luaarg() : type(a_undefined) {
+	}
+	luaarg(const luaarg& other) : type(other.type) {
+		switch(type) {
+		case a_boolean:	simple_content.b = other.simple_content.b;	break;
+		case a_double:	simple_content.d = other.simple_content.d;	break;
+		case a_integer:	simple_content.n = other.simple_content.n;	break;
+		case a_string:	string_content = string_content;			break;
+		}
+	}
+	luaarg(const bool &b) : type(a_boolean)	 { simple_content.b = b; }
+	luaarg(const double &d) : type(a_double) { simple_content.d = d; }
+	luaarg(const int &n) : type(a_integer)   { simple_content.n = n; }
+	luaarg(const std::string &s) : type(a_string), string_content(s) {}
 };
-struct luapathelement {
-	luapathelement(std::string k) :
-		type(key_t), key(k) {}
-	luapathelement(int i) :
-		type(index_t), index(i) {}
-	luapathelementtype type;
+
+/** Structure for Lua tables keys. */
+struct luakey {
+	enum {
+		p_name,
+		p_index
+	} type;
+	std::string name;
 	int index;
-	std::string key;
+
+	luakey(const char * k) : type(p_name), name(k) {}
+	luakey(std::string k) : type(p_name), name(k) {}
+	luakey(int i) : type(p_index), index(i) {}
 };
 
-/** Type definition for a value path. */
+/** Print utility for a Lua key. */
+std::ostream& operator<<(std::ostream& os, const luakey& key);
+
+/** Structure for path elements. */
+struct luapathelement {
+	luakey key;
+	std::vector<luaarg> args;
+
+	luapathelement(luakey k) : key(k) {}
+};
+
+/** Structure for a value path. */
 typedef std::vector<luapathelement> luapath;
 
 /**
@@ -89,13 +132,19 @@ public:
 
 	/** Gets the list of the keys in the associative table,
 	    or an empty vector for another value. */
-	std::vector<std::string> tablekeys() const;
+	std::vector<luakey> tablekeys() const;
 
 	/** Gets the value at the given table key. */
-	luavalue operator[](const std::string &keyname) const;
+	luavalue operator[](const luakey &key) const;
 
-	/** Gets the value at the given table index. */
-	luavalue operator[](const int &keyindex) const;
+	/** Gets the value returned by the function. */
+	luavalue operator()() const;
+	luavalue operator()(luaarg arg0) const;
+	luavalue operator()(luaarg arg0, luaarg arg1) const;
+	luavalue operator()(luaarg arg0, luaarg arg1, luaarg arg2) const;
+	luavalue operator()(luaarg arg0, luaarg arg1, luaarg arg2, luaarg arg3) const;
+	luavalue operator()(luaarg arg0, luaarg arg1, luaarg arg2, luaarg arg3, luaarg arg4) const;
+	luavalue operator()(const std::vector<luaarg> &args) const;
 
 	/** Gets the Lua type of the value. */
 	luatype type() const;
@@ -108,6 +157,9 @@ private:
 	friend class luadata;
 	friend void swap(luavalue& lhs, luavalue& rhs);
 };
+
+/** Print a luavalue, including tables and stuff. */
+std::ostream& operator<<(std::ostream& os, const luavalue& val);
 
 /** Swap method for luavalues. */
 void swap(luavalue& lhs, luavalue& rhs);

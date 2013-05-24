@@ -43,8 +43,11 @@ bool luadataimpl::loadbinaryfile(const std::string &path) {
 
 bool luadataimpl::loadsourcefile(const std::string &path) {
 	// Load the file in the state.
-	if(luaL_loadfile(L, path.c_str()))
+	if(luaL_loadfile(L, path.c_str())) {
+		std::cerr << lua_tostring(L, -1) << std::endl;
+		lua_pop(L, 1);
 		return false;
+	}
 
 	// There should be the chunk at the top of the stack now.
 	if(lua_gettop(L) != 1 || !lua_isfunction(L, 1))
@@ -65,26 +68,57 @@ bool luadataimpl::loadsourcefile(const std::string &path) {
 	return true;
 }
 
-luavalue luadataimpl::get(const std::string &valuename) {
-	return luavalue(luapath(1, luapathelement(valuename)), this);
-}
-
 inline void luadataimpl::getpath(const luapath &valuepath) {
 	// Gets the first element of the path to the front.
-	lua_getglobal(L, valuepath[0].key.c_str());
+	lua_getglobal(L, valuepath[0].key.name.c_str());
 
-	// If we still have path elements, and if the value is a table, dig in.
-	for(unsigned int i = 1; i < valuepath.size() && lua_istable(L, -1); ++ i) {
-		if(valuepath[i].type == key_t)
-			lua_pushstring(L, valuepath[i].key.c_str());
-		else
-			lua_pushinteger(L, valuepath[i].index + 1);
-		lua_gettable(L, -2);
+	// While there's a function on the top, call it.
+	while(lua_isfunction(L, -1)) {
+		callfunction(valuepath[0].args);
+	}
+
+	// If we still have path elements, dig in.
+	for(unsigned int i = 1; i < valuepath.size(); ++ i) {
+		// If the next value is a table, let's put the right key to the top of the stack.
+		if(lua_istable(L, -1)) {
+			// Extracts the value.
+			if(valuepath[i].key.type == luakey::p_name)
+				lua_pushstring(L, valuepath[i].key.name.c_str());
+			else
+				lua_pushinteger(L, valuepath[i].key.index);
+			lua_gettable(L, -2);
+
+			// If the value is a function, run it.
+			while(lua_isfunction(L, -1)) {
+				callfunction(valuepath[i].args);
+			}
+		}
+		else {
+			// Otherwise, there's a problem with this path.
+			lua_pushnil(L);
+		}
 	}
 }
 
-inline void luadataimpl::clearstack() {
-	lua_pop(L, lua_gettop(L));
+inline void luadataimpl::callfunction(const std::vector<luaarg> &args) {
+	for(luaarg arg : args) {
+		switch(arg.type) {
+		case luaarg::a_boolean:
+			lua_pushboolean(L, arg.simple_content.b);
+			break;
+		case luaarg::a_double:
+			lua_pushnumber(L, arg.simple_content.d);
+			break;
+		case luaarg::a_integer:
+			lua_pushinteger(L, arg.simple_content.n);
+			break;
+		case luaarg::a_string:
+			lua_pushstring(L, arg.string_content.c_str());
+			break;
+		}
+	}
+
+	lua_pcall(L, args.size(), 1, 0);
 }
 
 double luadataimpl::getdoublefromstack() {
@@ -99,9 +133,6 @@ double luadataimpl::getdoublefromstack() {
 		return lua_tonumber(L, -1);
 	case LUA_TSTRING:
 		return 0.0;
-	case LUA_TFUNCTION:
-		lua_pcall(L, 0, 1, 0);
-		return getdoublefromstack();
 	case LUA_TTABLE:
 		return luaL_len(L, -1);
 	case LUA_TNIL:
@@ -125,9 +156,6 @@ int luadataimpl::getintfromstack() {
 		return (int)lua_tonumber(L, -1);
 	case LUA_TSTRING:
 		return 0;
-	case LUA_TFUNCTION:
-		lua_pcall(L, 0, 1, 0);
-		return getintfromstack();
 	case LUA_TTABLE:
 		return luaL_len(L, -1);
 	case LUA_TNIL:
@@ -151,16 +179,16 @@ std::string luadataimpl::getstringfromstack() {
 		return std::to_string(lua_tonumber(L, -1));
 	case LUA_TSTRING:
 		return lua_tostring(L, -1);
-	case LUA_TFUNCTION:
-		lua_pcall(L, 0, 1, 0);
-		return getstringfromstack();
 	case LUA_TNIL:
 		return "nil";
 	case LUA_TTABLE:
 		return "table";
 	case LUA_TLIGHTUSERDATA:
+		return "lightuserdata";
 	case LUA_TUSERDATA:
+		return "userdata";
 	case LUA_TTHREAD:
+		return "thread";
 	default:
 		return 0;
 	}
@@ -180,9 +208,6 @@ bool luadataimpl::getboolfromstack() {
 		return !std::string(lua_tostring(L, -1)).empty();
 	case LUA_TTABLE:
 		return luaL_len(L, -1) != 0;
-	case LUA_TFUNCTION:
-		lua_pcall(L, 0, 1, 0);
-		return getboolfromstack();
 	case LUA_TNIL:
 		return false;
 	case LUA_TLIGHTUSERDATA:
@@ -196,28 +221,28 @@ bool luadataimpl::getboolfromstack() {
 double luadataimpl::retrievedouble(const luapath &valuepath) {
 	getpath(valuepath);
 	double value = getdoublefromstack();
-	clearstack();
+	lua_pop(L, (int)valuepath.size());
 	return value;
 }
 
 int luadataimpl::retrieveint(const luapath &valuepath) {
 	getpath(valuepath);
 	int value = getintfromstack();
-	clearstack();
+	lua_pop(L, (int)valuepath.size());
 	return value;
 }
 
 std::string luadataimpl::retrievestring(const luapath &valuepath) {
 	getpath(valuepath);
 	std::string value = getstringfromstack();
-	clearstack();
+	lua_pop(L, (int)valuepath.size());
 	return value;
 }
 
 bool luadataimpl::retrievebool(const luapath &valuepath) {
 	getpath(valuepath);
 	bool value = getboolfromstack();
-	clearstack();
+	lua_pop(L, (int)valuepath.size());
 	return value;
 }
 
@@ -226,22 +251,22 @@ luatype luadataimpl::type(const luapath &valuepath) {
 	getpath(valuepath);
 
 	// Gets its type.
-	int luaType = lua_type(L, 1);
-	luatype type = nil;
+	int luaType = lua_type(L, -1);
+	luatype type = lua_nil;
 	switch(luaType) {
-	case LUA_TBOOLEAN:	type = boolean;		break;
-	case LUA_TNUMBER:	type = number;		break;
-	case LUA_TSTRING:	type = string;		break;
-	case LUA_TTABLE:	type = table;		break;
-	case LUA_TFUNCTION:	type = function;	break;
-	case LUA_TNIL:		type = nil;			break;
+	case LUA_TBOOLEAN:	type = lua_boolean;		break;
+	case LUA_TNUMBER:	type = lua_number;		break;
+	case LUA_TSTRING:	type = lua_string;		break;
+	case LUA_TTABLE:	type = lua_table;		break;
+	case LUA_TFUNCTION:	type = lua_function;	break;
+	case LUA_TNIL:		type = lua_nil;			break;
 	case LUA_TLIGHTUSERDATA:
-	case LUA_TUSERDATA:	type = userdata;	break;
-	case LUA_TTHREAD:	type = thread;		break;
+	case LUA_TUSERDATA:	type = lua_userdata;	break;
+	case LUA_TTHREAD:	type = lua_thread;		break;
 	}
 
 	// Clears the stack.
-	clearstack();
+	lua_pop(L, (int)valuepath.size());
 
 	// And returns the value.
 	return type;
@@ -258,28 +283,32 @@ std::size_t luadataimpl::tablelen(const luapath &valuepath) {
 	}
 
 	// Clears the stack.
-	clearstack();
+	lua_pop(L, (int)valuepath.size());
 
 	// And returns the length.
 	return len;
 }
 
-std::vector<std::string> luadataimpl::tablekeys(const luapath &valuepath) {
+std::vector<luakey> luadataimpl::tablekeys(const luapath &valuepath) {
 	// Gets the value at the front of the stack.
 	getpath(valuepath);
 
 	// Gets the table keys.
-	std::vector<std::string> keys;
+	std::vector<luakey> keys;
 	if(lua_istable(L, -1)) {
 		lua_pushnil(L);
 		while(lua_next(L, -2)) {
-			keys.push_back(lua_tostring(L, -2));
+			if(lua_type(L, -2) == LUA_TSTRING)
+				keys.push_back(luakey(lua_tostring(L, -2)));
+			else {
+				keys.push_back(luakey(lua_tointeger(L, -2)));
+			}
 			lua_pop(L, 1);
 		}
 	}
 
 	// Clears the stack.
-	clearstack();
+	lua_pop(L, (int)valuepath.size());
 
 	// And returns the keys.
 	return keys;
