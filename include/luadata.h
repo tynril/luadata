@@ -9,7 +9,6 @@ namespace luadata {;
 // Implementation classes forward declaration
 namespace impl {
 	class luadataimpl;
-	class luavalueimpl;
 }
 
 /** Lua types that a luavalue can contain. */
@@ -25,7 +24,8 @@ enum luatype {
 };
 
 /** Structure that contains an argument to be passed to a Lua function. */
-struct luaarg {
+class luaarg {
+	/** Underlying type of the argument. */
 	enum {
 		a_undefined,
 		a_boolean,
@@ -33,31 +33,35 @@ struct luaarg {
 		a_integer,
 		a_string
 	} type;
+
+	/** Union to store non-string content. */
 	union {
 		bool b;
 		double d;
 		int n;
 	} simple_content;
+
+	/** String member to store string content. */
 	std::string string_content;
 
-	luaarg() : type(a_undefined) {
-	}
-	luaarg(const luaarg& other) : type(other.type) {
-		switch(type) {
-		case a_boolean:	simple_content.b = other.simple_content.b;	break;
-		case a_double:	simple_content.d = other.simple_content.d;	break;
-		case a_integer:	simple_content.n = other.simple_content.n;	break;
-		case a_string:	string_content = string_content;			break;
-		}
-	}
+public:
+	/** Implicit construction from a boolean value. */
 	luaarg(const bool &b) : type(a_boolean)	 { simple_content.b = b; }
+
+	/** Implicit construction from a double value. */
 	luaarg(const double &d) : type(a_double) { simple_content.d = d; }
+
+	/** Implicit construction from an integer value. */
 	luaarg(const int &n) : type(a_integer)   { simple_content.n = n; }
+
+	/** Implicit construction from a string value. */
 	luaarg(const std::string &s) : type(a_string), string_content(s) {}
+
+	friend class impl::luadataimpl;
 };
 
 /** Structure for Lua tables keys. */
-struct luakey {
+class luakey {
 	enum {
 		p_name,
 		p_index
@@ -65,20 +69,29 @@ struct luakey {
 	std::string name;
 	int index;
 
+public:
 	luakey(const char * k) : type(p_name), name(k) {}
 	luakey(std::string k) : type(p_name), name(k) {}
 	luakey(int i) : type(p_index), index(i) {}
+
+	friend class luadata;
+	friend class impl::luadataimpl;
+	friend std::ostream& operator<<(std::ostream& os, const luakey& key);
 };
 
 /** Print utility for a Lua key. */
 std::ostream& operator<<(std::ostream& os, const luakey& key);
 
 /** Structure for path elements. */
-struct luapathelement {
+class luapathelement {
 	luakey key;
 	std::vector<luaarg> args;
 
 	luapathelement(luakey k) : key(k) {}
+
+	friend class luavalue;
+	friend class luadata;
+	friend class impl::luadataimpl;
 };
 
 /** Structure for a value path. */
