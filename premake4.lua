@@ -31,8 +31,21 @@ solution "lua-data"
 	configuration { "x64", "Release" }
 		targetdir "bin/x64/Release"
 	
-	-- Static lua-data library
-	project "lua-data-static"
+	-- Test project
+	project "lua-data-test"
+		kind "ConsoleApp"
+		language "C++"
+		
+		-- Project files
+		files { "test/**.h", "test/**.cc" }
+		debugdir "test"
+		
+		-- Lua-data dependency
+		includedirs { "include" }
+		links { "lua-data" }
+	
+	-- Lua-data library
+	project "lua-data"
 		kind "StaticLib"
 		language "C++"
 		
@@ -42,50 +55,10 @@ solution "lua-data"
 		
 		-- Lua dependency
 		includedirs { lua .. "/src" }
-		links { "lua-static" }
+		links { "lua" }
 	
-	-- Shared lua-data library
-	project "lua-data-shared"
-		kind "SharedLib"
-		language "C++"
-		
-		-- Project files
-		defines { "LUADATA_BUILD_AS_DLL" }
-		includedirs { "include" }
-		files { "include/**.h", "src/**.h", "src/**.cc" }
-		
-		-- Lua dependency
-		includedirs { lua .. "/src" }
-		links { "lua-static" }
-	
-	-- Test project (statically linked)
-	project "lua-data-test-static"
-		kind "ConsoleApp"
-		language "C++"
-		
-		-- Project files
-		files { "test/**.h", "test/**.cc" }
-		debugdir "test"
-		
-		-- Lua-data dependency
-		includedirs { "include" }
-		links { "lua-data-static" }
-	
-	-- Test project (dynamically linked)
-	project "lua-data-test-shared"
-		kind "ConsoleApp"
-		language "C++"
-		
-		-- Project files
-		files { "test/**.h", "test/**.cc" }
-		debugdir "test"
-		
-		-- Lua-data dependency
-		includedirs { "include" }
-		links { "lua-data-shared" }
-	
-	-- Lua dependency (static library)
-	project "lua-static"
+	-- Lua dependency
+	project "lua"
 		language "C++"
 		kind "StaticLib"
 		

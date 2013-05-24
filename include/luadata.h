@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "luadataconf.h"
-
 namespace luadata {;
 
 // Implementation classes forward declaration
@@ -60,7 +58,7 @@ enum loadfilemode {
 /**
  * Represents a single value retrieved from Lua.
  */
-class LUADATA_API luavalue {
+class luavalue {
 	impl::luadataimpl *_pimpl;
 	luapath _valuepath;
 
@@ -73,34 +71,34 @@ public:
 
 #if (defined LUADATA_LIB || defined LUADATA_IMPLICIT_CAST)
 	/** Gets the value with an implicit casting. */
-	INLINE_ON_DLL operator double() const;
-	INLINE_ON_DLL operator int() const;
-	INLINE_ON_DLL operator std::string() const;
-	INLINE_ON_DLL operator bool() const;
+	operator double() const;
+	operator int() const;
+	operator std::string() const;
+	operator bool() const;
 #endif
 
 	/** Gets the value with an explicit casting. */
-	INLINE_ON_DLL double asdouble() const;
-	INLINE_ON_DLL int asint() const;
-	INLINE_ON_DLL std::string asstring() const;
-	INLINE_ON_DLL bool asbool() const;
+	double asdouble() const;
+	int asint() const;
+	std::string asstring() const;
+	bool asbool() const;
 
 	/** Gets the length of the (unassociative) table, or 0
 	    if it is an associative table or another value. */
-	INLINE_ON_DLL std::size_t tablelen() const;
+	std::size_t tablelen() const;
 
 	/** Gets the list of the keys in the associative table,
 	    or an empty vector for another value. */
-	INLINE_ON_DLL std::vector<std::string> tablekeys() const;
+	std::vector<std::string> tablekeys() const;
 
 	/** Gets the value at the given table key. */
-	INLINE_ON_DLL luavalue operator[](const std::string &keyname) const;
+	luavalue operator[](const std::string &keyname) const;
 
 	/** Gets the value at the given table index. */
-	INLINE_ON_DLL luavalue operator[](const int &keyindex) const;
+	luavalue operator[](const int &keyindex) const;
 
 	/** Gets the Lua type of the value. */
-	INLINE_ON_DLL luatype type() const;
+	luatype type() const;
 
 private:
 	/** Construction is done by the implementation. */
@@ -118,7 +116,7 @@ void swap(luavalue& lhs, luavalue& rhs);
  * This is the central class providing all features of the
  * lua-data library.
  */
-class LUADATA_API luadata {
+class luadata {
 	impl::luadataimpl *_pimpl;
 
 public:
@@ -135,7 +133,7 @@ public:
 	bool savefile(const std::string &path);
 
 	/** Get a value in the data tree. */
-	INLINE_ON_DLL luavalue operator[](const std::string& name) const;
+	luavalue operator[](const std::string& name) const;
 
 private:
 	/** Copy is disabled. */
