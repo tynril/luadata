@@ -5,8 +5,6 @@
 #include <luadata.h>
 
 // TODO:
-//  - Implement function call (operator() on luavalue, with a luaarg
-//    type wrapping various value types)
 //  - Implement hot-reloading
 //  - Implement chunk serialization
 
