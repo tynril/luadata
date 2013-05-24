@@ -29,24 +29,6 @@ struct pathseparatormatch {
 /** Type definition for binary chunk data. */
 typedef std::vector<uint8_t> luachunk;
 
-/** Union structure for path elements. */
-enum luapathelementtype {
-	index_t,
-	key_t
-};
-struct luapathelement {
-	luapathelement(std::string k) :
-		type(key_t), key(k) {}
-	luapathelement(int i) :
-		type(index_t), index(i) {}
-	luapathelementtype type;
-	int index;
-	std::string key;
-};
-
-/** Type definition for a value path. */
-typedef std::vector<luapathelement> luapath;
-
 /**
  * Implementation of the luadata library.
  */
@@ -74,16 +56,19 @@ public:
 	luavalue get(const std::string &valuename);
 
 	/** Gets the value of a Lua variable. */
-	template<typename T> inline T retrieve(const luapath &valuepath);
+	double retrievedouble(const luapath &valuepath);
+	int retrieveint(const luapath &valuepath);
+	std::string retrievestring(const luapath &valuepath);
+	bool retrievebool(const luapath &valuepath);
 
 	/** Gets the type of a Lua variable. */
-	inline luatype type(const luapath &valuepath);
+	luatype type(const luapath &valuepath);
 
 	/** Get the length of a Lua table, or 0 if it's not a table. */
-	inline std::size_t tablelen(const luapath &valuepath);
+	std::size_t tablelen(const luapath &valuepath);
 
 	/** Gets a list of keys of a Lua associative table. */
-	inline std::vector<std::string> tablekeys(const luapath &valuepath);
+	std::vector<std::string> tablekeys(const luapath &valuepath);
 
 private:
 	/** Loads a binary file and put it in a chunk with the given name. */
@@ -98,50 +83,14 @@ private:
 	/** Clears anything still on the stack. */
 	inline void clearstack();
 
-	/** Gets a luavalue from the top of the stack. */
-	template<typename T> inline T getfromstack();
+	/** Gets a value from the top of the stack. */
+	double getdoublefromstack();
+	int getintfromstack();
+	std::string getstringfromstack();
+	bool getboolfromstack();
 	
 	/** Static function used by lua_dump to  */
 	static int luawriter(lua_State *L, const void *chunk, size_t size, void *userChunk);
-};
-
-/**
- * Abstract implementation of a Lua value.
- */
-class luavalueimpl {
-	const luapath _valuepath;
-	luadataimpl *_data;
-
-public:
-	/** Builds a new value promise, bound to the given data implementation. */
-	luavalueimpl(const luapath &valuepath, luadataimpl *data);
-
-	/** Get the underlying value as a double. */
-	double getdouble() const;
-
-	/** Get the underlying value as an integer. */
-	int getint() const;
-
-	/** Get the underlying value as a string. */
-	std::string getstring() const;
-
-	/** Get the underlying value as a boolean. */
-	bool getbool() const;
-
-	/** Length of the table (if it's a table). */
-	std::size_t tablelen() const;
-
-	/** Keys of the associative table. */
-	std::vector<std::string> tablekeys() const;
-
-	/** Value of an associative table. */
-	luavalue tableval(const std::string &keyval) const;
-
-	/** Value of a non-associative table. */
-	luavalue tableval(const int &keyval) const;
-
-	/** Get the type of the underlying value. */
-	luatype type() const;
 };
 
 }} // namespaces

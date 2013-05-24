@@ -5,103 +5,88 @@
 
 namespace luadata {;
 
-luavalue::luavalue(impl::luavalueimpl *impl) :
-	_pimpl(impl),
-	_refCount(new unsigned int(1)) {
+luavalue::luavalue(const luapath &valuepath, impl::luadataimpl *impl) :
+	_valuepath(valuepath),
+	_pimpl(impl) {
 }
 
 luavalue::luavalue(const luavalue &other) :
-	_pimpl(other._pimpl),
-	_refCount(other._refCount) {
-	*_refCount ++;
+	_valuepath(other._valuepath),
+	_pimpl(other._pimpl) {
 }
 
 luavalue::~luavalue() {
-	if(*_refCount == 1) {
-		delete _pimpl;
-		delete _refCount;
-	}
-	else {
-		*_refCount --;
-	}
 }
 
 luavalue& luavalue::operator=(const luavalue& rhs) {
 	// Fallback for self-assignation.
 	if(_pimpl == rhs._pimpl) return *this;
 
-	// Drop our current implementation.
-	if(*_refCount == 1) {
-		delete _pimpl;
-		delete _refCount;
-	}
-	else {
-		*_refCount --;
-	}
-
-	// Assign the new one.
 	_pimpl = rhs._pimpl;
-	_refCount = rhs._refCount;
-	*_refCount ++;
+	_valuepath = rhs._valuepath;
 
 	return *this;
 }
 
-inline luavalue::operator double() const {
-	return _pimpl->getdouble();
+luavalue::operator double() const {
+	return _pimpl->retrievedouble(_valuepath);
 }
 
-inline luavalue::operator int() const {
-	return _pimpl->getint();
+luavalue::operator int() const {
+	return _pimpl->retrieveint(_valuepath);
 }
 
-inline luavalue::operator std::string() const {
-	return _pimpl->getstring();
+luavalue::operator std::string() const {
+	return _pimpl->retrievestring(_valuepath);
 }
 
-inline luavalue::operator bool() const {
-	return _pimpl->getbool();
+luavalue::operator bool() const {
+	return _pimpl->retrievebool(_valuepath);
 }
 
-inline double luavalue::asdouble() const {
-	return _pimpl->getdouble();
+double luavalue::asdouble() const {
+	return _pimpl->retrievedouble(_valuepath);
 }
 
-inline int luavalue::asint() const {
-	return _pimpl->getint();
+int luavalue::asint() const {
+	return _pimpl->retrieveint(_valuepath);
 }
 
-inline std::string luavalue::asstring() const {
-	return _pimpl->getstring();
+std::string luavalue::asstring() const {
+	return _pimpl->retrievestring(_valuepath);
 }
 
-inline bool luavalue::asbool() const {
-	return _pimpl->getbool();
+bool luavalue::asbool() const {
+	return _pimpl->retrievebool(_valuepath);
 }
 
-inline std::size_t luavalue::tablelen() const {
-	return _pimpl->tablelen();
+std::size_t luavalue::tablelen() const {
+	return _pimpl->tablelen(_valuepath);
 }
 
-inline std::vector<std::string> luavalue::tablekeys() const {
-	return _pimpl->tablekeys();
+std::vector<std::string> luavalue::tablekeys() const {
+	return _pimpl->tablekeys(_valuepath);
 }
 
-inline luavalue luavalue::operator[](const std::string &keyname) const {
-	return _pimpl->tableval(keyname);
+luavalue luavalue::operator[](const std::string &keyname) const {
+	luapath appendedPath(_valuepath);
+	appendedPath.push_back(luapathelement(keyname));
+	return luavalue(appendedPath, _pimpl);
 }
 
-inline luavalue luavalue::operator[](const int &keyindex) const {
-	return _pimpl->tableval(keyindex);
+luavalue luavalue::operator[](const int &keyindex) const {
+	luapath appendedPath(_valuepath);
+	appendedPath.push_back(luapathelement(keyindex));
+	return luavalue(appendedPath, _pimpl);
 }
 
-inline luatype luavalue::type() const {
-	return _pimpl->type();
+luatype luavalue::type() const {
+	return _pimpl->type(_valuepath);
 }
 
 void swap(luavalue& lhs, luavalue& rhs) {
 	std::swap(lhs._pimpl, rhs._pimpl);
-	std::swap(lhs._refCount, rhs._refCount);
+	std::swap(lhs._valuepath, rhs._valuepath);
 }
 
 luadata::luadata() :
@@ -120,7 +105,7 @@ bool luadata::savefile(const std::string &path) {
 	return _pimpl->savefile(path);
 }
 
-inline luavalue luadata::operator[](const std::string &name) const {
+luavalue luadata::operator[](const std::string &name) const {
 	return _pimpl->get(name);
 }
 

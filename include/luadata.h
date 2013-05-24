@@ -25,6 +25,24 @@ enum luatype {
 	table
 };
 
+/** Union structure for path elements. */
+enum luapathelementtype {
+	index_t,
+	key_t
+};
+struct luapathelement {
+	luapathelement(std::string k) :
+		type(key_t), key(k) {}
+	luapathelement(int i) :
+		type(index_t), index(i) {}
+	luapathelementtype type;
+	int index;
+	std::string key;
+};
+
+/** Type definition for a value path. */
+typedef std::vector<luapathelement> luapath;
+
 /**
  * The different modes to open a data file.
  */
@@ -43,8 +61,8 @@ enum loadfilemode {
  * Represents a single value retrieved from Lua.
  */
 class LUADATA_API luavalue {
-	impl::luavalueimpl *_pimpl;
-	unsigned int *_refCount;
+	impl::luadataimpl *_pimpl;
+	luapath _valuepath;
 
 public:
 	luavalue(const luavalue &other);
@@ -55,41 +73,40 @@ public:
 
 #if (defined LUADATA_LIB || defined LUADATA_IMPLICIT_CAST)
 	/** Gets the value with an implicit casting. */
-	inline operator double() const;
-	inline operator int() const;
-	inline operator std::string() const;
-	inline operator bool() const;
+	operator double() const;
+	operator int() const;
+	operator std::string() const;
+	operator bool() const;
 #endif
 
 	/** Gets the value with an explicit casting. */
-	inline double asdouble() const;
-	inline int asint() const;
-	inline std::string asstring() const;
-	inline bool asbool() const;
+	double asdouble() const;
+	int asint() const;
+	std::string asstring() const;
+	bool asbool() const;
 
 	/** Gets the length of the (unassociative) table, or 0
 	    if it is an associative table or another value. */
-	inline std::size_t tablelen() const;
+	std::size_t tablelen() const;
 
 	/** Gets the list of the keys in the associative table,
 	    or an empty vector for another value. */
-	inline std::vector<std::string> tablekeys() const;
+	std::vector<std::string> tablekeys() const;
 
 	/** Gets the value at the given table key. */
-	inline luavalue operator[](const std::string &keyname) const;
+	luavalue operator[](const std::string &keyname) const;
 
 	/** Gets the value at the given table index. */
-	inline luavalue operator[](const int &keyindex) const;
+	luavalue operator[](const int &keyindex) const;
 
 	/** Gets the Lua type of the value. */
-	inline luatype type() const;
+	luatype type() const;
 
 private:
 	/** Construction is done by the implementation. */
-	luavalue(impl::luavalueimpl *impl);
+	luavalue(const luapath &valuepath, impl::luadataimpl *impl);
 
 	friend class impl::luadataimpl;
-	friend class impl::luavalueimpl;
 	friend class luadata;
 	friend void swap(luavalue& lhs, luavalue& rhs);
 };
