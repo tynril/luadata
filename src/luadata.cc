@@ -28,59 +28,59 @@ luavalue& luavalue::operator=(const luavalue& rhs) {
 	return *this;
 }
 
-luavalue::operator double() const {
+INLINE_ON_DLL luavalue::operator double() const {
 	return _pimpl->retrievedouble(_valuepath);
 }
 
-luavalue::operator int() const {
+INLINE_ON_DLL luavalue::operator int() const {
 	return _pimpl->retrieveint(_valuepath);
 }
 
-luavalue::operator std::string() const {
+INLINE_ON_DLL luavalue::operator std::string() const {
 	return _pimpl->retrievestring(_valuepath);
 }
 
-luavalue::operator bool() const {
+INLINE_ON_DLL luavalue::operator bool() const {
 	return _pimpl->retrievebool(_valuepath);
 }
 
-double luavalue::asdouble() const {
+INLINE_ON_DLL double luavalue::asdouble() const {
 	return _pimpl->retrievedouble(_valuepath);
 }
 
-int luavalue::asint() const {
+INLINE_ON_DLL int luavalue::asint() const {
 	return _pimpl->retrieveint(_valuepath);
 }
 
-std::string luavalue::asstring() const {
+INLINE_ON_DLL std::string luavalue::asstring() const {
 	return _pimpl->retrievestring(_valuepath);
 }
 
-bool luavalue::asbool() const {
+INLINE_ON_DLL bool luavalue::asbool() const {
 	return _pimpl->retrievebool(_valuepath);
 }
 
-std::size_t luavalue::tablelen() const {
+INLINE_ON_DLL std::size_t luavalue::tablelen() const {
 	return _pimpl->tablelen(_valuepath);
 }
 
-std::vector<std::string> luavalue::tablekeys() const {
+INLINE_ON_DLL std::vector<std::string> luavalue::tablekeys() const {
 	return _pimpl->tablekeys(_valuepath);
 }
 
-luavalue luavalue::operator[](const std::string &keyname) const {
+INLINE_ON_DLL luavalue luavalue::operator[](const std::string &keyname) const {
 	luapath appendedPath(_valuepath);
 	appendedPath.push_back(luapathelement(keyname));
 	return luavalue(appendedPath, _pimpl);
 }
 
-luavalue luavalue::operator[](const int &keyindex) const {
+INLINE_ON_DLL luavalue luavalue::operator[](const int &keyindex) const {
 	luapath appendedPath(_valuepath);
 	appendedPath.push_back(luapathelement(keyindex));
 	return luavalue(appendedPath, _pimpl);
 }
 
-luatype luavalue::type() const {
+INLINE_ON_DLL luatype luavalue::type() const {
 	return _pimpl->type(_valuepath);
 }
 
@@ -105,7 +105,7 @@ bool luadata::savefile(const std::string &path) {
 	return _pimpl->savefile(path);
 }
 
-luavalue luadata::operator[](const std::string &name) const {
+INLINE_ON_DLL luavalue luadata::operator[](const std::string &name) const {
 	return _pimpl->get(name);
 }
 

@@ -73,34 +73,34 @@ public:
 
 #if (defined LUADATA_LIB || defined LUADATA_IMPLICIT_CAST)
 	/** Gets the value with an implicit casting. */
-	operator double() const;
-	operator int() const;
-	operator std::string() const;
-	operator bool() const;
+	INLINE_ON_DLL operator double() const;
+	INLINE_ON_DLL operator int() const;
+	INLINE_ON_DLL operator std::string() const;
+	INLINE_ON_DLL operator bool() const;
 #endif
 
 	/** Gets the value with an explicit casting. */
-	double asdouble() const;
-	int asint() const;
-	std::string asstring() const;
-	bool asbool() const;
+	INLINE_ON_DLL double asdouble() const;
+	INLINE_ON_DLL int asint() const;
+	INLINE_ON_DLL std::string asstring() const;
+	INLINE_ON_DLL bool asbool() const;
 
 	/** Gets the length of the (unassociative) table, or 0
 	    if it is an associative table or another value. */
-	std::size_t tablelen() const;
+	INLINE_ON_DLL std::size_t tablelen() const;
 
 	/** Gets the list of the keys in the associative table,
 	    or an empty vector for another value. */
-	std::vector<std::string> tablekeys() const;
+	INLINE_ON_DLL std::vector<std::string> tablekeys() const;
 
 	/** Gets the value at the given table key. */
-	luavalue operator[](const std::string &keyname) const;
+	INLINE_ON_DLL luavalue operator[](const std::string &keyname) const;
 
 	/** Gets the value at the given table index. */
-	luavalue operator[](const int &keyindex) const;
+	INLINE_ON_DLL luavalue operator[](const int &keyindex) const;
 
 	/** Gets the Lua type of the value. */
-	luatype type() const;
+	INLINE_ON_DLL luatype type() const;
 
 private:
 	/** Construction is done by the implementation. */
@@ -135,7 +135,7 @@ public:
 	bool savefile(const std::string &path);
 
 	/** Get a value in the data tree. */
-	inline luavalue operator[](const std::string& name) const;
+	INLINE_ON_DLL luavalue operator[](const std::string& name) const;
 
 private:
 	/** Copy is disabled. */

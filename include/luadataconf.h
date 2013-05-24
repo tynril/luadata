@@ -10,8 +10,10 @@
   #else
     #define LUADATA_API __declspec(dllimport)
   #endif
+  #define INLINE_ON_DLL inline
 #else
   #define LUADATA_API
+  #define INLINE_ON_DLL
 #endif
 
 #endif // _LUADATACONF_H_
