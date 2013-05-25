@@ -36,11 +36,6 @@ bool luadataimpl::loadcode(const std::string &code) {
 	return processloadedchunk();
 }
 
-void luadataimpl::dump(const std::string &name, std::ostream &out) {
-	luachunk &chunk = _chunks[name];
-	std::copy(chunk.begin(), chunk.end(), std::ostream_iterator<uint8_t>(out));
-}
-
 bool luadataimpl::processloadedchunk() {
 	// There should be the chunk at the top of the stack now.
 	if(lua_gettop(L) != 1 || !lua_isfunction(L, 1))

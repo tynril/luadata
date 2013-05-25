@@ -183,9 +183,6 @@ public:
 	/** Loads a string containing Lua source code. */
 	bool loadcode(const std::string &luacode);
 
-	/** Saves every loaded data files to a binary data file. */
-	void dump(std::ostream& out);
-
 	/** Get a value in the data tree. */
 	luavalue operator[](const std::string& name) const;
 

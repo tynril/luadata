@@ -7,7 +7,6 @@
 
 // TODO:
 //  - Implement hot-reloading
-//  - Implement chunk serialization
 
 int main() {
 	{
@@ -103,10 +102,6 @@ int main() {
 	int integer_value2 = test["integer_value"].asint();
 	std::cout << "integer_value:                  " << integer_value2 << std::endl;
 	*/
-
-	std::fstream file("D:\\test.dat", std::ios_base::out | std::ios_base::binary);
-	test.dump(file);
-	file.close();
 	
 	}
 	std::cin.get();

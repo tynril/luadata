@@ -47,14 +47,11 @@ public:
 	/** The destructor releases the Lua state. */
 	~luadataimpl();
 
-	/** Loads a file (source or binary). */
+	/** Loads a Lua file (source code or precompiled). */
 	bool loadfile(const std::string &path);
 
 	/** Loads a string containing Lua code. */
 	bool loadcode(const std::string &code);
-
-	/** Dump chunks in a binary format to a stream. */
-	void dump(const std::string &name, std::ostream &out);
 
 	/** Gets the value of a Lua variable. */
 	double retrievedouble(const luapath &valuepath);
