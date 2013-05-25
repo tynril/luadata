@@ -5,9 +5,6 @@
 
 #include <luadata.h>
 
-// TODO:
-//  - Implement hot-reloading
-
 int main() {
 	{
 	// Loading a LUA file.
@@ -102,6 +99,14 @@ int main() {
 	int integer_value2 = test["integer_value"].asint();
 	std::cout << "integer_value:                  " << integer_value2 << std::endl;
 	*/
+
+	while(true) {
+		int integer_value = test["integer_value"].asint();
+		std::cout << "integer_value:                  " << integer_value << std::endl;
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		test.hotreload();
+	}
 	
 	}
 	std::cin.get();

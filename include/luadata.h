@@ -183,6 +183,9 @@ public:
 	/** Loads a string containing Lua source code. */
 	bool loadcode(const std::string &luacode);
 
+	/** Call this function to process hot-reloading if needed. */
+	void hotreload();
+
 	/** Get a value in the data tree. */
 	luavalue operator[](const std::string& name) const;
 

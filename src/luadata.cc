@@ -171,6 +171,10 @@ bool luadata::loadcode(const std::string &code) {
 	return _pimpl->loadcode(code);
 }
 
+void luadata::hotreload() {
+	_pimpl->hotreload();
+}
+
 luavalue luadata::operator[](const std::string &name) const {
 	return luavalue(luapath(1, luapathelement(name)), _pimpl);
 }

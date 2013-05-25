@@ -4,7 +4,10 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 extern "C" {
 #include <lua.h>
@@ -16,20 +19,6 @@ extern "C" {
 
 namespace luadata { namespace impl {;
 
-/** Structure defining the path separator depending on the OS. */
-struct pathseparatormatch {
-	bool operator()(char ch) const {
-#ifdef _WIN32
-		return ch == '\\' || ch == '/';
-#else
-		return ch == '/';
-#endif
-	}
-};
-
-/** Type definition for binary chunk data. */
-typedef std::vector<uint8_t> luachunk;
-
 /**
  * Implementation of the luadata library.
  */
@@ -37,8 +26,8 @@ class luadataimpl {
 	/** Lua state pointer. */
 	lua_State *L;
 
-	/** Map holding all loaded chunks. */
-	std::unordered_map<std::string, luachunk> _chunks;
+	/** Lists of loaded files. */
+	std::vector<std::pair<std::string, time_t>> _loadedFiles;
 
 public:
 	/** The constructor creates a new Lua state. */
@@ -52,6 +41,9 @@ public:
 
 	/** Loads a string containing Lua code. */
 	bool loadcode(const std::string &code);
+
+	/** Do the hotreloading if needed. */
+	void hotreload();
 
 	/** Gets the value of a Lua variable. */
 	double retrievedouble(const luapath &valuepath);
@@ -69,7 +61,6 @@ public:
 	std::vector<luakey> tablekeys(const luapath &valuepath);
 
 private:
-
 	/** Process a loaded chunk. */
 	bool processloadedchunk();
 
@@ -84,10 +75,10 @@ private:
 	int getintfromstack();
 	std::string getstringfromstack();
 	bool getboolfromstack();
-	
-	/** Static function used by lua_dump to  */
-	static int luawriter(lua_State *L, const void *chunk, size_t size, void *userChunk);
 };
+
+/** Last modification date of the file. */
+time_t getmodtime(const std::string &filepath);
 
 }} // namespaces
 

@@ -23,6 +23,12 @@ bool luadataimpl::loadfile(const std::string &path) {
 		return false;
 	}
 
+	// Add to the loaded files list, if needed.
+	if(std::find_if(_loadedFiles.begin(), _loadedFiles.end(),
+		[&path](const std::pair<std::string, time_t> &other) { return other.first == path; }) == _loadedFiles.end()) {
+		_loadedFiles.push_back(std::pair<std::string, time_t>(path, getmodtime(path)));
+	}
+
 	return processloadedchunk();
 }
 
@@ -36,16 +42,22 @@ bool luadataimpl::loadcode(const std::string &code) {
 	return processloadedchunk();
 }
 
+void luadataimpl::hotreload() {
+	for(auto &file : _loadedFiles) {
+		// Check if the file was modified.
+		time_t lastmod = getmodtime(file.first);
+		if(lastmod != file.second) {
+			// The file has been modified, let's reload it.
+			loadfile(file.first);
+			file.second = lastmod;
+		}
+	}
+}
+
 bool luadataimpl::processloadedchunk() {
 	// There should be the chunk at the top of the stack now.
 	if(lua_gettop(L) != 1 || !lua_isfunction(L, 1))
 		return false;
-
-	// Dump the binary values to a new chunk.
-	luachunk chunk;
-	lua_dump(L, &luadataimpl::luawriter, &chunk);
-	chunk.shrink_to_fit();
-	_chunks["test"] = chunk;
 
 	// Runs the script directly.
 	if(lua_pcall(L, 0, 0, 0))
@@ -300,11 +312,11 @@ std::vector<luakey> luadataimpl::tablekeys(const luapath &valuepath) {
 	return keys;
 }
 
-int luadataimpl::luawriter(lua_State *L, const void *chunk, std::size_t size, void *userChunkPtr) {
-	luachunk *userChunk = static_cast<luachunk*>(userChunkPtr);
-	const uint8_t *newData = static_cast<const uint8_t*>(chunk);
-	userChunk->insert(userChunk->end(), newData, newData + size);
-	return 0;
+time_t getmodtime(const std::string &filepath) {
+	struct stat st = {0};
+	int ret = stat(filepath.c_str(), &st);
+	if(ret == -1) return 0;
+	return st.st_mtime;
 }
 
 }} // namespaces
