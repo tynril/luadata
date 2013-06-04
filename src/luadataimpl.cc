@@ -122,7 +122,7 @@ inline void luadataimpl::callfunction(const std::vector<luaarg> &args) {
 	lua_pcall(L, args.size(), 1, 0);
 }
 
-double luadataimpl::getdoublefromstack() {
+double luadataimpl::getdoublefromstack(const double &defaultValue) {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -137,6 +137,7 @@ double luadataimpl::getdoublefromstack() {
 	case LUA_TTABLE:
 		return luaL_len(L, -1);
 	case LUA_TNIL:
+		return defaultValue;
 	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
 	case LUA_TTHREAD:
@@ -145,7 +146,7 @@ double luadataimpl::getdoublefromstack() {
 	}
 }
 
-int luadataimpl::getintfromstack() {
+int luadataimpl::getintfromstack(const int &defaultValue) {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -160,6 +161,7 @@ int luadataimpl::getintfromstack() {
 	case LUA_TTABLE:
 		return luaL_len(L, -1);
 	case LUA_TNIL:
+		return defaultValue;
 	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
 	case LUA_TTHREAD:
@@ -168,7 +170,7 @@ int luadataimpl::getintfromstack() {
 	}
 }
 
-std::string luadataimpl::getstringfromstack() {
+std::string luadataimpl::getstringfromstack(const std::string &defaultValue) {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -181,7 +183,7 @@ std::string luadataimpl::getstringfromstack() {
 	case LUA_TSTRING:
 		return lua_tostring(L, -1);
 	case LUA_TNIL:
-		return "nil";
+		return defaultValue;
 	case LUA_TTABLE:
 		return "table";
 	case LUA_TLIGHTUSERDATA:
@@ -195,7 +197,7 @@ std::string luadataimpl::getstringfromstack() {
 	}
 }
 
-bool luadataimpl::getboolfromstack() {
+bool luadataimpl::getboolfromstack(const bool &defaultValue) {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -210,7 +212,7 @@ bool luadataimpl::getboolfromstack() {
 	case LUA_TTABLE:
 		return luaL_len(L, -1) != 0;
 	case LUA_TNIL:
-		return false;
+		return defaultValue;
 	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
 	case LUA_TTHREAD:
@@ -219,32 +221,48 @@ bool luadataimpl::getboolfromstack() {
 	}
 }
 
-double luadataimpl::retrievedouble(const luapath &valuepath) {
+double luadataimpl::retrievedouble(const luapath &valuepath, const double &defaultValue) {
 	getpath(valuepath);
-	double value = getdoublefromstack();
+	double value = getdoublefromstack(defaultValue);
+	lua_pop(L, (int)valuepath.size());
+	return value;
+}
+
+double luadataimpl::retrievedouble(const luapath &valuepath) {
+	return retrievedouble(valuepath, 0.0);
+}
+
+int luadataimpl::retrieveint(const luapath &valuepath, const int &defaultValue) {
+	getpath(valuepath);
+	int value = getintfromstack(defaultValue);
 	lua_pop(L, (int)valuepath.size());
 	return value;
 }
 
 int luadataimpl::retrieveint(const luapath &valuepath) {
+	return retrieveint(valuepath, 0);
+}
+
+std::string luadataimpl::retrievestring(const luapath &valuepath, const std::string &defaultValue) {
 	getpath(valuepath);
-	int value = getintfromstack();
+	std::string value = getstringfromstack(defaultValue);
 	lua_pop(L, (int)valuepath.size());
 	return value;
 }
 
 std::string luadataimpl::retrievestring(const luapath &valuepath) {
+	return retrievestring(valuepath, "nil");
+}
+
+bool luadataimpl::retrievebool(const luapath &valuepath, const bool &defaultValue) {
 	getpath(valuepath);
-	std::string value = getstringfromstack();
+	bool value = getboolfromstack(defaultValue);
 	lua_pop(L, (int)valuepath.size());
 	return value;
 }
 
 bool luadataimpl::retrievebool(const luapath &valuepath) {
-	getpath(valuepath);
-	bool value = getboolfromstack();
-	lua_pop(L, (int)valuepath.size());
-	return value;
+	return retrievebool(valuepath, false);
 }
 
 luatype luadataimpl::type(const luapath &valuepath) {

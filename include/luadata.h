@@ -153,9 +153,13 @@ public:
 
 	/** Gets the value with an explicit casting. */
 	double asdouble() const;
+	double asdouble(const double &defaultValue) const;
 	int asint() const;
+	int asint(const int &defaultValue) const;
 	std::string asstring() const;
+	std::string asstring(const std::string &defaultValue) const;
 	bool asbool() const;
+	bool asbool(const bool &defaultValue) const;
 
 	/** Gets the length of the (unassociative) table, or 0
 	    if it is an associative table or another value. */

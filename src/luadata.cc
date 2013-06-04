@@ -48,16 +48,32 @@ double luavalue::asdouble() const {
 	return _pimpl->retrievedouble(_valuepath);
 }
 
+double luavalue::asdouble(const double &defaultValue) const {
+	return _pimpl->retrievedouble(_valuepath, defaultValue);
+}
+
 int luavalue::asint() const {
 	return _pimpl->retrieveint(_valuepath);
+}
+
+int luavalue::asint(const int &defaultValue) const {
+	return _pimpl->retrieveint(_valuepath, defaultValue);
 }
 
 std::string luavalue::asstring() const {
 	return _pimpl->retrievestring(_valuepath);
 }
 
+std::string luavalue::asstring(const std::string &defaultValue) const {
+	return _pimpl->retrievestring(_valuepath, defaultValue);
+}
+
 bool luavalue::asbool() const {
 	return _pimpl->retrievebool(_valuepath);
+}
+
+bool luavalue::asbool(const bool &defaultValue) const {
+	return _pimpl->retrievebool(_valuepath, defaultValue);
 }
 
 std::size_t luavalue::tablelen() const {
