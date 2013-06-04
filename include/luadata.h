@@ -60,9 +60,13 @@ public:
 	friend class impl::luadataimpl;
 };
 
+// Comparator forward declaration.
+struct luakeycomparator;
+
 /** Structure for Lua tables keys. */
 class luakey {
 	enum {
+		p_undefined,
 		p_name,
 		p_index
 	} type;
@@ -73,10 +77,34 @@ public:
 	luakey(const char * k) : type(p_name), name(k) {}
 	luakey(std::string k) : type(p_name), name(k) {}
 	luakey(int i) : type(p_index), index(i) {}
+	luakey() : type(p_undefined) {}
 
 	friend class luadata;
 	friend class impl::luadataimpl;
 	friend std::ostream& operator<<(std::ostream& os, const luakey& key);
+	friend struct luakeycomparator;
+};
+
+/** Comparison utility for lua keys. */
+struct luakeycomparator {
+	bool operator()(luakey& lhs, luakey& rhs) {
+		// Indexed keys are sorted before named keys.
+		if(lhs.type != rhs.type) {
+			if(lhs.type == luakey::p_index) return true;
+			return false;
+		}
+
+		// Indexed keys sort.
+		if(lhs.type == luakey::p_index)
+			return lhs.index < rhs.index;
+
+		// Named keys sort.
+		if(lhs.type == luakey::p_name)
+			return lhs.name < rhs.name;
+
+		// Unreachable default (or undefined keys).
+		return false;
+	}
 };
 
 /** Print utility for a Lua key. */
@@ -185,6 +213,9 @@ public:
 
 	/** Call this function to process hot-reloading if needed. */
 	void hotreload();
+
+	/** Gets the list of the keys in the data tree. */
+	std::vector<luakey> keys() const;
 
 	/** Get a value in the data tree. */
 	luavalue operator[](const std::string& name) const;

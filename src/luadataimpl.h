@@ -26,6 +26,9 @@ class luadataimpl {
 	/** Lua state pointer. */
 	lua_State *L;
 
+	/** A vector of everything defined in the global table before anything was loaded. */
+	std::vector<luakey> _globalKeys;
+
 	/** Lists of loaded files. */
 	std::vector<std::pair<std::string, time_t>> _loadedFiles;
 
@@ -57,6 +60,9 @@ public:
 	/** Get the length of a Lua table, or 0 if it's not a table. */
 	std::size_t tablelen(const luapath &valuepath);
 
+	/** Gets a list of keys in the global table. */
+	std::vector<luakey> tablekeys();
+
 	/** Gets a list of keys of a Lua associative table. */
 	std::vector<luakey> tablekeys(const luapath &valuepath);
 
@@ -69,6 +75,9 @@ private:
 
 	/** Calls the function at the top of the stack with the given arguments. */
 	inline void callfunction(const std::vector<luaarg> &args);
+
+	/** Returns the keys of the table on the top of the stack. */
+	inline std::vector<luakey> fetchtablekeys();
 
 	/** Gets a value from the top of the stack. */
 	double getdoublefromstack();

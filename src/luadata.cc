@@ -129,8 +129,10 @@ luatype luavalue::type() const {
 std::ostream& operator<<(std::ostream& os, const luakey& key) {
 	if(key.type == luakey::p_name)
 		os << key.name;
-	else
+	else if(key.type == luakey::p_index)
 		os << key.index;
+	else
+		os << "undefined";
 	return os;
 }
 
@@ -173,6 +175,10 @@ bool luadata::loadcode(const std::string &code) {
 
 void luadata::hotreload() {
 	_pimpl->hotreload();
+}
+
+std::vector<luakey> luadata::keys() const {
+	return _pimpl->tablekeys();
 }
 
 luavalue luadata::operator[](const std::string &name) const {

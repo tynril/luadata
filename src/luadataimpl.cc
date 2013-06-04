@@ -9,6 +9,9 @@ luadataimpl::luadataimpl() :
 {
 	// Load Lua libraries.
 	luaL_openlibs(L);
+
+	// Initialize the list of global values.
+	_globalKeys = tablekeys();
 }
 
 luadataimpl::~luadataimpl() {
@@ -287,10 +290,39 @@ std::size_t luadataimpl::tablelen(const luapath &valuepath) {
 	return len;
 }
 
+std::vector<luakey> luadataimpl::tablekeys() {
+	// Gets the value at the front of the stack.
+	lua_pushglobaltable(L);
+
+	// Fetch the keys.
+	std::vector<luakey> allKeys = fetchtablekeys();
+
+	// Clears the stack.
+	lua_pop(L, 1);
+
+	// Sort the keys and get the difference from the base set.
+	std::sort(allKeys.begin(), allKeys.end(), luakeycomparator());
+	std::vector<luakey> keys(allKeys.size());
+	std::vector<luakey>::iterator it = std::set_difference(allKeys.begin(), allKeys.end(), _globalKeys.begin(), _globalKeys.end(), keys.begin(), luakeycomparator());
+	keys.resize(it - keys.begin());
+
+	return keys;
+}
+
 std::vector<luakey> luadataimpl::tablekeys(const luapath &valuepath) {
 	// Gets the value at the front of the stack.
 	getpath(valuepath);
 
+	// Fetch the keys.
+	std::vector<luakey> keys = fetchtablekeys();
+
+	// Clears the stack.
+	lua_pop(L, (int)valuepath.size());
+
+	return keys;
+}
+
+std::vector<luakey> luadataimpl::fetchtablekeys() {
 	// Gets the table keys.
 	std::vector<luakey> keys;
 	if(lua_istable(L, -1)) {
@@ -304,9 +336,6 @@ std::vector<luakey> luadataimpl::tablekeys(const luapath &valuepath) {
 			lua_pop(L, 1);
 		}
 	}
-
-	// Clears the stack.
-	lua_pop(L, (int)valuepath.size());
 
 	// And returns the keys.
 	return keys;

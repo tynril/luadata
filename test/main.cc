@@ -18,6 +18,12 @@ int main() {
 	test.loadcode("loaded_from_code = {\"hell\", \"yeah\"}");
 	std::cout << "loaded_from_code:              " << test["loaded_from_code"] << std::endl;
 
+	std::vector<luadata::luakey> allKeys = test.keys();
+	std::cout << "All keys:" << std::endl;
+	for(luadata::luakey &key : allKeys) {
+		std::cout << " - " << key << std::endl;
+	}
+
 	int int_from_array = test["table_list_mixed_value"][0].asint();
 	std::cout << "int_from_array:                " << int_from_array << std::endl;
 
@@ -100,13 +106,13 @@ int main() {
 	std::cout << "integer_value:                  " << integer_value2 << std::endl;
 	*/
 
-	while(true) {
+	/*while(true) {
 		int integer_value = test["integer_value"].asint();
 		std::cout << "integer_value:                  " << integer_value << std::endl;
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		test.hotreload();
-	}
+	}*/
 	
 	}
 	std::cin.get();
