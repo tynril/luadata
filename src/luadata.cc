@@ -181,8 +181,8 @@ std::vector<luakey> luadata::keys() const {
 	return _pimpl->tablekeys();
 }
 
-luavalue luadata::operator[](const std::string &name) const {
-	return luavalue(luapath(1, luapathelement(name)), _pimpl);
+luavalue luadata::operator[](const luakey &key) const {
+	return luavalue(luapath(1, luapathelement(key)), _pimpl);
 }
 
 } // namespace luadata

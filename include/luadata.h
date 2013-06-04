@@ -79,6 +79,10 @@ public:
 	luakey(int i) : type(p_index), index(i) {}
 	luakey() : type(p_undefined) {}
 
+	const std::string str() const {
+		return type == p_name ? name : std::to_string(index);
+	}
+
 	friend class luadata;
 	friend class impl::luadataimpl;
 	friend std::ostream& operator<<(std::ostream& os, const luakey& key);
@@ -218,7 +222,7 @@ public:
 	std::vector<luakey> keys() const;
 
 	/** Get a value in the data tree. */
-	luavalue operator[](const std::string& name) const;
+	luavalue operator[](const luakey& name) const;
 
 private:
 	/** Copy is disabled. */
