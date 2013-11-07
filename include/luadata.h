@@ -97,7 +97,7 @@ public:
 
 /** Comparison utility for lua keys. */
 struct luakeycomparator {
-	bool operator()(luakey& lhs, luakey& rhs) {
+	bool operator()(const luakey& lhs, const luakey& rhs) const {
 		// Indexed keys are sorted before named keys.
 		if(lhs.type != rhs.type) {
 			if(lhs.type == luakey::p_index) return true;
