@@ -29,10 +29,11 @@ project "lua"
 	language "C++"
 	kind "StaticLib"
 	
+	-- Project files
+	files { lua .. "/src/*.h", lua .. "/src/*.hpp", lua .. "/src/*.c" }
+	excludes { lua .. "/src/lua.c" }
+	vpaths { ["*"] = lua }
+	
 	-- Disable some warnings on Visual Studio
 	configuration "vs*"
 		defines { "_CRT_SECURE_NO_WARNINGS" }
-	
-	-- Project files
-	files { lua .. "/src/*.h", lua .. "/src/*.hpp", lua .. "/src/*.c" }
-	vpaths { ["*"] = lua }
