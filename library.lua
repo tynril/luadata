@@ -12,6 +12,10 @@ project "luadata"
 	kind "StaticLib"
 	language "C++"
 	
+	-- Enabling the c++11 standard on make
+	configuration "gmake"
+		buildoptions { "-std=c++11" }
+	
 	-- Project files
 	includedirs { "include" }
 	files { "include/**.h", "src/**.h", "src/**.cc" }
