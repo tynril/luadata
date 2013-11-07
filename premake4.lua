@@ -58,6 +58,10 @@ solution "luadata"
 		-- Lua-data dependency
 		includedirs { "include", gtest .. "/include" }
 		links { "luadata", "gtest" }
+		
+		-- Enabling the C++11 standard on Make
+		configuration "gmake"
+			buildoptions { "-std=c++11" }
 	
 	-- Link with the library.
 	dofile "library.lua"
