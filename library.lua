@@ -16,24 +16,20 @@ project "luadata"
 	includedirs { "include" }
 	files { "include/**.h", "src/**.h", "src/**.cc" }
 	
-	-- Lua dependency
+	-- Lua dependency files
 	includedirs { lua .. "/src" }
-	links { "lua" }
+	files { lua .. "/src/*.h", lua .. "/src/*.hpp", lua .. "/src/*.c" }
+	excludes { lua .. "/src/lua.c" }
+	vpaths {
+		["lua"] = lua,
+		["src"] = "src",
+		["include"] = "include"
+	}
+	
+	-- Disable some deprecation warnings on Visual Studio
+	configuration "vs*"
+		defines{ "_CRT_SECURE_NO_WARNINGS" }
 	
 	-- Enabling the C++11 standard on Make
 	configuration "gmake"
 		buildoptions { "-std=c++11" }
-
--- liblua dependency
-project "lua"
-	language "C++"
-	kind "StaticLib"
-	
-	-- Project files
-	files { lua .. "/src/*.h", lua .. "/src/*.hpp", lua .. "/src/*.c" }
-	excludes { lua .. "/src/lua.c" }
-	vpaths { ["*"] = lua }
-	
-	-- Disable some warnings on Visual Studio
-	configuration "vs*"
-		defines { "_CRT_SECURE_NO_WARNINGS" }
