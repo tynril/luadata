@@ -4,7 +4,7 @@ solution "luadata"
 	platforms { "x32", "x64" }
 	
 	-- Start project
-	startproject "libluadata-test"
+	startproject "luadata-test"
 	
 	-- Global configuration
 	location "projects"
@@ -43,7 +43,7 @@ solution "luadata"
 		includedirs { gtest, gtest .. "/include" }
 	
 	-- Test project
-	project "libluadata-test"
+	project "luadata-test"
 		kind "ConsoleApp"
 		language "C++"
 		
@@ -53,7 +53,7 @@ solution "luadata"
 		
 		-- Lua-data dependency
 		includedirs { "include", gtest .. "/include" }
-		links { "libluadata", "gtest" }
+		links { "luadata", "gtest" }
 	
 	-- Link with the library.
 	dofile "library.lua"

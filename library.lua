@@ -2,7 +2,7 @@
 lua = "3rd-party/lua-5.2.2"
 
 -- libluadata library
-project "libluadata"
+project "luadata"
 	kind "StaticLib"
 	language "C++"
 	
@@ -12,10 +12,10 @@ project "libluadata"
 	
 	-- Lua dependency
 	includedirs { lua .. "/src" }
-	links { "liblua" }
+	links { "lua" }
 
 -- liblua dependency
-project "liblua"
+project "lua"
 	language "C++"
 	kind "StaticLib"
 	
