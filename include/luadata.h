@@ -78,7 +78,7 @@ public:
 	luakey(const char * k) : type(p_name), name(k) {}
 	luakey(std::string k) : type(p_name), name(k) {}
 	luakey(std::ptrdiff_t i) : type(p_index), index(i) {}
-	luakey(int i) : type(p_index), index(i) {}
+	template<typename = typename std::enable_if<false, std::is_same<int, std::ptrdiff_t>>> luakey(int i) : type(p_index), index(i) {}
 	luakey() : type(p_undefined) {}
 
 	const std::string str() const {
