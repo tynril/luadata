@@ -82,6 +82,8 @@ public:
 	luakey(int i) : type(p_index), index(i) {}
 #elif defined(LUADATA_32)
 	// std::ptrdiff_t is (probably) already an int on x32, avoid redefinition.
+	// This could have been an std::enable_if<> use-case, but I've avoided it
+	// to retain VS2012 support.
 #endif
 	luakey() : type(p_undefined) {}
 
