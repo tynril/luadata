@@ -135,7 +135,7 @@ double luadataimpl::getdoublefromstack(const double &defaultValue) {
 	case LUA_TSTRING:
 		return 0.0;
 	case LUA_TTABLE:
-		return luaL_len(L, -1);
+		return 0.0;
 	case LUA_TNIL:
 		return defaultValue;
 	case LUA_TLIGHTUSERDATA:
@@ -159,7 +159,7 @@ int luadataimpl::getintfromstack(const int &defaultValue) {
 	case LUA_TSTRING:
 		return 0;
 	case LUA_TTABLE:
-		return luaL_len(L, -1);
+		return 0;
 	case LUA_TNIL:
 		return defaultValue;
 	case LUA_TLIGHTUSERDATA:
@@ -210,14 +210,14 @@ bool luadataimpl::getboolfromstack(const bool &defaultValue) {
 	case LUA_TSTRING:
 		return !std::string(lua_tostring(L, -1)).empty();
 	case LUA_TTABLE:
-		return luaL_len(L, -1) != 0;
+		return false;
 	case LUA_TNIL:
 		return defaultValue;
 	case LUA_TLIGHTUSERDATA:
 	case LUA_TUSERDATA:
 	case LUA_TTHREAD:
 	default:
-		return 0;
+		return false;
 	}
 }
 
