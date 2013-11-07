@@ -1,0 +1,9 @@
+value_nil = nil
+value_boolean_true = true
+value_boolean_false = false
+value_number_zero = 0
+value_number_non_zero = 3.14159
+value_string_empty = ""
+value_string_non_empty = "this is a string"
+value_integer_zero = 0
+value_integer_non_zero = 42

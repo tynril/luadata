@@ -3,6 +3,9 @@ solution "luadata"
 	configurations { "Debug", "Release" }
 	platforms { "x32", "x64" }
 	
+	-- Start project
+	startproject "libluadata-test"
+	
 	-- Global configuration
 	location "projects"
 	objdir "obj"
@@ -28,6 +31,17 @@ solution "luadata"
 	configuration { "x64", "Release" }
 		targetdir "bin/x64/Release"
 	
+	-- Google Test dependency
+	gtest = "3rd-party/gtest-1.7.0"
+	project "gtest"
+		kind "StaticLib"
+		language "C++"
+		
+		-- Project files
+		files { gtest .. "/**.h", gtest .. "/**.cc" }
+		excludes { gtest .. "/src/gtest-all.cc" }
+		includedirs { gtest, gtest .. "/include" }
+	
 	-- Test project
 	project "libluadata-test"
 		kind "ConsoleApp"
@@ -35,11 +49,11 @@ solution "luadata"
 		
 		-- Project files
 		files { "test/**.h", "test/**.cc" }
-		debugdir "test"
+		debugdir "test/resources"
 		
 		-- Lua-data dependency
-		includedirs { "include" }
-		links { "libluadata" }
+		includedirs { "include", gtest .. "/include" }
+		links { "libluadata", "gtest" }
 	
 	-- Link with the library.
 	dofile "library.lua"
