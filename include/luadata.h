@@ -138,12 +138,13 @@ class luavalue {
 
 public:
 	luavalue(const luavalue &other);
+	luavalue(luavalue &&other);
 	~luavalue();
 
 	/** Assignation. */
 	luavalue& operator=(const luavalue& rhs);
 
-#if (defined LUADATA_LIB || defined LUADATA_IMPLICIT_CAST)
+#if defined(LUADATA_LIB) || defined(LUADATA_IMPLICIT_CAST)
 	/** Gets the value with an implicit casting. */
 	operator double() const;
 	operator int() const;
@@ -209,6 +210,9 @@ class luadata {
 public:
 	/** Creates a Lua data provider. */
 	luadata();
+
+	/** Moves a Lua data provider. */
+	luadata(luadata &&other);
 
 	/** Destroys the Lua data provider. */
 	~luadata();

@@ -15,6 +15,11 @@ luavalue::luavalue(const luavalue &other) :
 	_pimpl(other._pimpl) {
 }
 
+luavalue::luavalue(luavalue &&other) :
+	_valuepath(std::move(other._valuepath)),
+	_pimpl(std::move(other._pimpl)) {
+}
+
 luavalue::~luavalue() {
 }
 
@@ -175,6 +180,10 @@ void swap(luavalue& lhs, luavalue& rhs) {
 
 luadata::luadata() :
 	_pimpl(new impl::luadataimpl()) {
+}
+
+luadata::luadata(luadata &&other) :
+	_pimpl(std::move(other._pimpl)) {
 }
 
 luadata::~luadata() {
