@@ -1,6 +1,10 @@
 #include <iostream>
 #include <fstream>
+#ifdef _WIN32
 #include <sys/utime.h>
+#else
+#include <utime.h>
+#endif
 #include "luadata.h"
 #include "gtest/gtest.h"
 
