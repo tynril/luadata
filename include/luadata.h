@@ -8,11 +8,12 @@ namespace luadata {;
 
 // Implementation classes forward declaration
 namespace impl {
+	/** Implementation of the luadata system. */
 	class luadataimpl;
 }
 
 /** Lua types that a luavalue can contain. */
-enum luatype {
+enum class luatype {
 	lua_nil,
 	lua_boolean,
 	lua_number,
@@ -84,9 +85,7 @@ public:
 		return type == p_name ? name : std::to_string(index);
 	}
 
-	friend class luadata;
 	friend class impl::luadataimpl;
-	friend std::ostream& operator<<(std::ostream& os, const luakey& key);
 	friend struct luakeycomparator;
 };
 
@@ -115,27 +114,26 @@ struct luakeycomparator {
 /** Print utility for a Lua key. */
 std::ostream& operator<<(std::ostream& os, const luakey& key);
 
-/** Structure for path elements. */
-class luapathelement {
-	luakey key;
-	std::vector<luaarg> args;
+/** More implementation details. */
+namespace impl {
+	/** Structure for path elements. */
+	struct luapathelement {
+		luakey key;
+		std::vector<luaarg> args;
 
-	luapathelement(luakey k) : key(k) {}
+		luapathelement(luakey k) : key(k) {}
+	};
 
-	friend class luavalue;
-	friend class luadata;
-	friend class impl::luadataimpl;
-};
-
-/** Structure for a value path. */
-typedef std::vector<luapathelement> luapath;
+	/** Structure for a value path. */
+	typedef std::vector<luapathelement> luapath;
+}
 
 /**
  * Represents a single value retrieved from Lua.
  */
 class luavalue {
 	impl::luadataimpl *_pimpl;
-	luapath _valuepath;
+	impl::luapath _valuepath;
 
 public:
 	luavalue(const luavalue &other);
@@ -188,9 +186,8 @@ public:
 
 private:
 	/** Construction is done by the implementation. */
-	luavalue(const luapath &valuepath, impl::luadataimpl *impl);
+	luavalue(const impl::luapath &valuepath, impl::luadataimpl *impl);
 
-	friend class impl::luadataimpl;
 	friend class luadata;
 	friend void swap(luavalue& lhs, luavalue& rhs);
 };

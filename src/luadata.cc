@@ -5,7 +5,7 @@
 
 namespace luadata {;
 
-luavalue::luavalue(const luapath &valuepath, impl::luadataimpl *impl) :
+luavalue::luavalue(const impl::luapath &valuepath, impl::luadataimpl *impl) :
 	_valuepath(valuepath),
 	_pimpl(impl) {
 }
@@ -90,8 +90,8 @@ std::vector<luakey> luavalue::tablekeys() const {
 }
 
 luavalue luavalue::operator[](const luakey &key) const {
-	luapath appendedPath = _valuepath;
-	appendedPath.push_back(luapathelement(key));
+	impl::luapath appendedPath = _valuepath;
+	appendedPath.push_back(impl::luapathelement(key));
 	return luavalue(appendedPath, _pimpl);
 }
 
@@ -138,7 +138,7 @@ luavalue luavalue::operator()(luaarg arg0, luaarg arg1, luaarg arg2, luaarg arg3
 }
 
 luavalue luavalue::operator()(const std::vector<luaarg> &args) const {
-	luapath argsedPath = _valuepath;
+	impl::luapath argsedPath = _valuepath;
 	argsedPath[argsedPath.size() - 1].args = args;
 	return luavalue(argsedPath, _pimpl);
 }
@@ -148,17 +148,11 @@ luatype luavalue::type() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const luakey& key) {
-	if(key.type == luakey::p_name)
-		os << key.name;
-	else if(key.type == luakey::p_index)
-		os << key.index;
-	else
-		os << "undefined";
-	return os;
+	return os << key.str();
 }
 
 std::ostream& operator<<(std::ostream& os, const luavalue& val) {
-	if(val.type() == lua_table) {
+	if(val.type() == luatype::lua_table) {
 		os << "{";
 		bool isFirst = true;
 		for(luakey key : val.tablekeys()) {
@@ -207,7 +201,7 @@ std::vector<luakey> luadata::keys() const {
 }
 
 luavalue luadata::operator[](const luakey &key) const {
-	return luavalue(luapath(1, luapathelement(key)), _pimpl);
+	return luavalue(impl::luapath(1, impl::luapathelement(key)), _pimpl);
 }
 
 } // namespace luadata

@@ -271,17 +271,17 @@ luatype luadataimpl::type(const luapath &valuepath) {
 
 	// Gets its type.
 	int luaType = lua_type(L, -1);
-	luatype type = lua_nil;
+	luatype type = luatype::lua_nil;
 	switch(luaType) {
-	case LUA_TBOOLEAN:	type = lua_boolean;		break;
-	case LUA_TNUMBER:	type = lua_number;		break;
-	case LUA_TSTRING:	type = lua_string;		break;
-	case LUA_TTABLE:	type = lua_table;		break;
-	case LUA_TFUNCTION:	type = lua_function;	break;
-	case LUA_TNIL:		type = lua_nil;			break;
+	case LUA_TBOOLEAN:	type = luatype::lua_boolean;	break;
+	case LUA_TNUMBER:	type = luatype::lua_number;		break;
+	case LUA_TSTRING:	type = luatype::lua_string;		break;
+	case LUA_TTABLE:	type = luatype::lua_table;		break;
+	case LUA_TFUNCTION:	type = luatype::lua_function;	break;
+	case LUA_TNIL:		type = luatype::lua_nil;		break;
 	case LUA_TLIGHTUSERDATA:
-	case LUA_TUSERDATA:	type = lua_userdata;	break;
-	case LUA_TTHREAD:	type = lua_thread;		break;
+	case LUA_TUSERDATA:	type = luatype::lua_userdata;	break;
+	case LUA_TTHREAD:	type = luatype::lua_thread;		break;
 	}
 
 	// Clears the stack.
