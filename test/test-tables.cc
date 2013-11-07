@@ -251,10 +251,10 @@ TEST_F(LuaDataTablesTest, TestDeep)
 	EXPECT_EQ("qux", value["foo"]["bar"]["baz"].asstring());
 }
 
-// Testing a deep, mixed assoc/non-assoc table.
-TEST_F(LuaDataTablesTest, TestDeepMixed)
+// Testing a more complex deel table.
+TEST_F(LuaDataTablesTest, TestDeepComplex)
 {
-	luadata::luavalue value = data_["table_deep_mixed"];
+	luadata::luavalue value = data_["table_deep_complex"];
 
 	// Checking if the type is fine.
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
@@ -292,6 +292,35 @@ TEST_F(LuaDataTablesTest, TestDeepMixed)
 	EXPECT_EQ("A", value[2][1].asstring());
 	EXPECT_EQ("B", value[2][2].asstring());
 	EXPECT_EQ("C", value[2][3].asstring());
+}
+
+// Testing a mixed assoc/non-assoc table.
+TEST_F(LuaDataTablesTest, TestMixed)
+{
+	luadata::luavalue value = data_["table_mixed"];
+
+	// Checking if the type is fine.
+	EXPECT_EQ(luadata::luatype::lua_table, value.type());
+
+	// Checking if cast returns expected results.
+	EXPECT_EQ(false, value.asbool());
+	EXPECT_EQ(0.0, value.asdouble());
+	EXPECT_EQ(0, value.asint());
+	EXPECT_EQ("table", value.asstring());
+
+	// As it's not a function, it should return itself.
+	EXPECT_EQ(value.type(), value().type());
+	EXPECT_EQ(value.type(), value("foo").type());
+
+	// There's only one non-associative element.
+	EXPECT_EQ(1, value.tablelen());
+
+	// The key list size should be complete.
+	EXPECT_EQ(2, value.tablekeys().size());
+
+	// Testing the values.
+	EXPECT_EQ("bar", value["foo"].asstring());
+	EXPECT_EQ("baz", value[1].asstring());
 }
 
 } // namespace

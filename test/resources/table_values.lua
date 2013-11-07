@@ -10,7 +10,7 @@ table_deep = {
 		}
 	}
 }
-table_deep_mixed = {
+table_deep_complex = {
 	{
 		foo = { 1, 2, 3 },
 		bar = { 1.23, 4.56, 7.89 },
@@ -25,3 +25,4 @@ table_deep_mixed = {
 		"A", "B", "C"
 	}
 }
+table_mixed = { foo = "bar", "baz" }
