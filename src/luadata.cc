@@ -81,7 +81,7 @@ bool luavalue::asbool(const bool &defaultValue) const {
 	return _pimpl->retrievebool(_valuepath, defaultValue);
 }
 
-std::size_t luavalue::tablelen() const {
+std::ptrdiff_t luavalue::tablelen() const {
 	return _pimpl->tablelen(_valuepath);
 }
 

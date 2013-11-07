@@ -62,7 +62,7 @@ public:
 	luatype type(const luapath &valuepath);
 
 	/** Get the length of a Lua table, or 0 if it's not a table. */
-	std::size_t tablelen(const luapath &valuepath);
+	std::ptrdiff_t tablelen(const luapath &valuepath);
 
 	/** Gets a list of keys in the global table. */
 	std::vector<luakey> tablekeys();

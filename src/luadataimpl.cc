@@ -119,7 +119,7 @@ inline void luadataimpl::callfunction(const std::vector<luaarg> &args) {
 		}
 	}
 
-	lua_pcall(L, args.size(), 1, 0);
+	lua_pcall(L, static_cast<int>(args.size()), 1, 0);
 }
 
 double luadataimpl::getdoublefromstack(const double &defaultValue) {
@@ -291,12 +291,12 @@ luatype luadataimpl::type(const luapath &valuepath) {
 	return type;
 }
 
-std::size_t luadataimpl::tablelen(const luapath &valuepath) {
+std::ptrdiff_t luadataimpl::tablelen(const luapath &valuepath) {
 	// Gets the value at the front of the stack.
 	getpath(valuepath);
 
 	// Gets the table length.
-	std::size_t len = 0;
+	std::ptrdiff_t len = 0;
 	if(lua_istable(L, -1)) {
 		len = luaL_len(L, -1);
 	}

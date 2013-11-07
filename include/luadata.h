@@ -71,11 +71,12 @@ class luakey {
 		p_index
 	} type;
 	std::string name;
-	int index;
+	std::ptrdiff_t index;
 
 public:
 	luakey(const char * k) : type(p_name), name(k) {}
 	luakey(std::string k) : type(p_name), name(k) {}
+	luakey(std::ptrdiff_t i) : type(p_index), index(i) {}
 	luakey(int i) : type(p_index), index(i) {}
 	luakey() : type(p_undefined) {}
 
@@ -164,7 +165,7 @@ public:
 
 	/** Gets the length of the (unassociative) table, or 0
 	    if it is an associative table or another value. */
-	std::size_t tablelen() const;
+	std::ptrdiff_t tablelen() const;
 
 	/** Gets the list of the keys in the associative table,
 	    or an empty vector for another value. */
