@@ -8,7 +8,7 @@ solution "luadata"
 	
 	-- Global configuration
 	location "projects"
-	objdir "obj"
+	objdir "bin"
 	
 	-- Common configuration for 'Debug'
 	configuration "Debug"
