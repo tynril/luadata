@@ -23,7 +23,7 @@ TEST_F(LuaDataSimpleValuesTest, TestNil)
 	EXPECT_EQ(luadata::luatype::lua_nil, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("nil", value.asstring());
@@ -79,7 +79,7 @@ TEST_F(LuaDataSimpleValuesTest, TestBooleanFalse)
 	EXPECT_EQ(luadata::luatype::lua_boolean, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("false", value.asstring());
@@ -107,7 +107,7 @@ TEST_F(LuaDataSimpleValuesTest, TestNumberZero)
 	EXPECT_EQ(luadata::luatype::lua_number, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ(std::to_string(0.0), value.asstring());
@@ -163,7 +163,7 @@ TEST_F(LuaDataSimpleValuesTest, TestStringEmpty)
 	EXPECT_EQ(luadata::luatype::lua_string, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("", value.asstring());
@@ -219,7 +219,7 @@ TEST_F(LuaDataSimpleValuesTest, TestIntegerZero)
 	EXPECT_EQ(luadata::luatype::lua_number, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ(std::to_string(0.0), value.asstring());

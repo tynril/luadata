@@ -23,7 +23,7 @@ TEST_F(LuaDataTablesTest, TestEmpty)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
@@ -51,7 +51,7 @@ TEST_F(LuaDataTablesTest, TestSimple)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
@@ -90,7 +90,7 @@ TEST_F(LuaDataTablesTest, TestAssoc)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
@@ -130,7 +130,7 @@ TEST_F(LuaDataTablesTest, TestNested)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
@@ -182,7 +182,7 @@ TEST_F(LuaDataTablesTest, TestNestedAssoc)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
@@ -232,7 +232,7 @@ TEST_F(LuaDataTablesTest, TestDeep)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
@@ -260,7 +260,7 @@ TEST_F(LuaDataTablesTest, TestDeepComplex)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
@@ -303,7 +303,7 @@ TEST_F(LuaDataTablesTest, TestMixed)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());

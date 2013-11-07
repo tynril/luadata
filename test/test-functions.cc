@@ -114,7 +114,7 @@ TEST_F(LuaDataFunctionsTest, TestReturnsTable)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
@@ -149,7 +149,7 @@ TEST_F(LuaDataFunctionsTest, TestFunctionsInTable)
 	EXPECT_EQ(luadata::luatype::lua_table, value.type());
 
 	// Checking if cast returns expected results.
-	EXPECT_EQ(false, value.asbool());
+	EXPECT_FALSE(value.asbool());
 	EXPECT_EQ(0.0, value.asdouble());
 	EXPECT_EQ(0, value.asint());
 	EXPECT_EQ("table", value.asstring());
