@@ -19,7 +19,11 @@ solution "luadata"
 	-- Common configuration for 'Release'
 	configuration "Release"
 		defines { "NDEBUG" }
-		flags { "OptimizeSpeed" }
+		optimize "Full"
+	
+	-- On Visual Studio 2012, the _VARIADIC_MAX is too low.
+	configuration "vs2012"
+		defines { "_VARIADIC_MAX=10" }
 	
 	-- Output folders
 	configuration { "x32", "Debug" }

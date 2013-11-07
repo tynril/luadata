@@ -1,6 +1,12 @@
 -- Path to lua sources
 lua = "3rd-party/lua-5.2.2"
 
+-- Common configuration for x32/x64
+configuration "x32"
+	defines { "LUADATA_32" }
+configuration "x64"
+	defines { "LUADATA_64" }
+
 -- libluadata library
 project "luadata"
 	kind "StaticLib"
