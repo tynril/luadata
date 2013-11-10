@@ -37,7 +37,7 @@ luavalue::operator double() const {
 	return _pimpl->retrievedouble(_valuepath);
 }
 
-luavalue::operator int() const {
+luavalue::operator std::ptrdiff_t() const {
 	return _pimpl->retrieveint(_valuepath);
 }
 
@@ -57,11 +57,11 @@ double luavalue::asdouble(const double &defaultValue) const {
 	return _pimpl->retrievedouble(_valuepath, defaultValue);
 }
 
-int luavalue::asint() const {
+std::ptrdiff_t luavalue::asint() const {
 	return _pimpl->retrieveint(_valuepath);
 }
 
-int luavalue::asint(const int &defaultValue) const {
+std::ptrdiff_t luavalue::asint(const std::ptrdiff_t &defaultValue) const {
 	return _pimpl->retrieveint(_valuepath, defaultValue);
 }
 

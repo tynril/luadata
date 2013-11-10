@@ -60,8 +60,8 @@ public:
 	/** Gets the value of a Lua variable. */
 	double retrievedouble(const luapath &valuepath, const double &defaultValue);
 	double retrievedouble(const luapath &valuepath);
-	int retrieveint(const luapath &valuepath, const int &defaultValue);
-	int retrieveint(const luapath &valuepath);
+	std::ptrdiff_t retrieveint(const luapath &valuepath, const std::ptrdiff_t &defaultValue);
+	std::ptrdiff_t retrieveint(const luapath &valuepath);
 	std::string retrievestring(const luapath &valuepath, const std::string &defaultValue);
 	std::string retrievestring(const luapath &valuepath);
 	bool retrievebool(const luapath &valuepath, const bool &defaultValue);
@@ -102,7 +102,7 @@ private:
 
 	/** Gets a value from the top of the stack. */
 	double getdoublefromstack(const double &defaultValue);
-	int getintfromstack(const int &defaultValue);
+	std::ptrdiff_t getintfromstack(const std::ptrdiff_t &defaultValue);
 	std::string getstringfromstack(const std::string &defaultValue);
 	bool getboolfromstack(const bool &defaultValue);
 };

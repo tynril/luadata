@@ -163,7 +163,7 @@ public:
 #if defined(LUADATA_LIB) || defined(LUADATA_IMPLICIT_CAST)
 	/** Gets the value with an implicit casting. */
 	operator double() const;
-	operator int() const;
+	operator std::ptrdiff_t() const;
 	operator std::string() const;
 	operator bool() const;
 #endif
@@ -171,8 +171,8 @@ public:
 	/** Gets the value with an explicit casting. */
 	double asdouble() const;
 	double asdouble(const double &defaultValue) const;
-	int asint() const;
-	int asint(const int &defaultValue) const;
+	std::ptrdiff_t asint() const;
+	std::ptrdiff_t asint(const std::ptrdiff_t &defaultValue) const;
 	std::string asstring() const;
 	std::string asstring(const std::string &defaultValue) const;
 	bool asbool() const;

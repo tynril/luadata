@@ -150,7 +150,7 @@ double luadataimpl::getdoublefromstack(const double &defaultValue) {
 	}
 }
 
-int luadataimpl::getintfromstack(const int &defaultValue) {
+std::ptrdiff_t luadataimpl::getintfromstack(const std::ptrdiff_t &defaultValue) {
 	// Get the value type.
 	int type = lua_type(L, -1);
 
@@ -159,7 +159,7 @@ int luadataimpl::getintfromstack(const int &defaultValue) {
 	case LUA_TBOOLEAN:
 		return lua_toboolean(L, -1) != 0 ? 1 : 0;
 	case LUA_TNUMBER:
-		return (int)lua_tonumber(L, -1);
+		return (std::ptrdiff_t)lua_tonumber(L, -1);
 	case LUA_TSTRING:
 		return 0;
 	case LUA_TTABLE:
@@ -236,14 +236,14 @@ double luadataimpl::retrievedouble(const luapath &valuepath) {
 	return retrievedouble(valuepath, 0.0);
 }
 
-int luadataimpl::retrieveint(const luapath &valuepath, const int &defaultValue) {
+std::ptrdiff_t luadataimpl::retrieveint(const luapath &valuepath, const std::ptrdiff_t &defaultValue) {
 	getpath(valuepath);
-	int value = getintfromstack(defaultValue);
+	std::ptrdiff_t value = getintfromstack(defaultValue);
 	lua_pop(L, (int)valuepath.path.size());
 	return value;
 }
 
-int luadataimpl::retrieveint(const luapath &valuepath) {
+std::ptrdiff_t luadataimpl::retrieveint(const luapath &valuepath) {
 	return retrieveint(valuepath, 0);
 }
 
