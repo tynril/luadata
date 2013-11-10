@@ -66,5 +66,22 @@ solution "luadata"
 			-- Linking with pthread for gtest.
 			links { "pthread" }
 	
+	-- Sample project
+	project "luadata-sample"
+		kind "ConsoleApp"
+		language "C++"
+		
+		-- Project files
+		files { "sample/src/**.h", "sample/src/**.cc" }
+		debugdir "sample/assets"
+		
+		-- Lua-data dependency
+		includedirs { "include" }
+		links { "luadata" }
+		
+		configuration "gmake"
+			-- Enabling the C++11 standard on Make
+			buildoptions { "-std=c++11" }
+	
 	-- Link with the library.
 	dofile "library.lua"
