@@ -91,8 +91,16 @@ std::vector<luakey> luavalue::tablekeys() const {
 
 luavalue luavalue::operator[](const luakey &key) const {
 	impl::luapath appendedPath = _valuepath;
-	appendedPath.push_back(impl::luapathelement(key));
+	appendedPath.path.push_back(impl::luapathelement(key));
 	return luavalue(appendedPath, _pimpl);
+}
+
+std::vector<luakey>::const_iterator luavalue::begin() {
+	return _pimpl->tablebegin(_valuepath);
+}
+
+std::vector<luakey>::const_iterator luavalue::end() {
+	return _pimpl->tableend(_valuepath);
 }
 
 luavalue luavalue::operator()() const {
@@ -139,7 +147,7 @@ luavalue luavalue::operator()(luaarg arg0, luaarg arg1, luaarg arg2, luaarg arg3
 
 luavalue luavalue::operator()(const std::vector<luaarg> &args) const {
 	impl::luapath argsedPath = _valuepath;
-	argsedPath[argsedPath.size() - 1].args = args;
+	argsedPath.path[argsedPath.path.size() - 1].args = args;
 	return luavalue(argsedPath, _pimpl);
 }
 
@@ -201,7 +209,15 @@ std::vector<luakey> luadata::keys() const {
 }
 
 luavalue luadata::operator[](const luakey &key) const {
-	return luavalue(impl::luapath(1, impl::luapathelement(key)), _pimpl);
+	return luavalue(impl::luapath(impl::luapathelement(key)), _pimpl);
+}
+
+std::vector<luakey>::const_iterator luadata::begin() {
+	return _pimpl->tablebegin();
+}
+
+std::vector<luakey>::const_iterator luadata::end() {
+	return _pimpl->tableend();
 }
 
 } // namespace luadata

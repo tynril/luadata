@@ -323,4 +323,33 @@ TEST_F(LuaDataTablesTest, TestMixed)
 	EXPECT_EQ("baz", value[1].asstring());
 }
 
+// Testing the iteration over a table.
+TEST_F(LuaDataTablesTest, TestIterator)
+{
+	luadata::luavalue value = data_["table_iterable"];
+
+	// Prepare vectors of expected values.
+	std::vector<std::string> expectedStrings{ "A", "B", "C" };
+	std::vector<int> expectedInts{ 12, 24, 48 };
+
+	// Iterate over the value.
+	int i = 0;
+	for (auto &index : value) {
+		EXPECT_EQ(std::to_string(i + 1), index.str());
+		EXPECT_EQ(luadata::luatype::lua_string, value[index][1].type());
+		EXPECT_EQ(luadata::luatype::lua_number, value[index][2].type());
+		EXPECT_EQ(expectedStrings[i], value[index][1].asstring());
+		EXPECT_EQ(expectedInts[i], value[index][2].asint());
+		i++;
+	}
+	EXPECT_EQ(3, i);
+
+	// Test the iteration over the global data tree.
+	int count = 0;
+	for (auto &index : data_) {
+		count++;
+	}
+	EXPECT_EQ(9, count);
+}
+
 } // namespace

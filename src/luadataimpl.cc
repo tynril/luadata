@@ -5,7 +5,8 @@
 namespace luadata { namespace impl {;
 
 luadataimpl::luadataimpl() :
-	L(luaL_newstate())
+	L(luaL_newstate()),
+	_cacheStateIndex(0)
 {
 	// Load Lua libraries.
 	luaL_openlibs(L);
@@ -66,32 +67,35 @@ bool luadataimpl::processloadedchunk() {
 	if(lua_pcall(L, 0, 0, 0))
 		return false;
 
+	// Invalidates the cache.
+	_cacheStateIndex++;
+
 	return true;
 }
 
 inline void luadataimpl::getpath(const luapath &valuepath) {
 	// Gets the first element of the path to the front.
-	lua_getglobal(L, valuepath[0].key.name.c_str());
+	lua_getglobal(L, valuepath.path[0].key.name.c_str());
 
 	// While there's a function on the top, call it.
 	while(lua_isfunction(L, -1)) {
-		callfunction(valuepath[0].args);
+		callfunction(valuepath.path[0].args);
 	}
 
 	// If we still have path elements, dig in.
-	for(unsigned int i = 1; i < valuepath.size(); ++ i) {
+	for(unsigned int i = 1; i < valuepath.path.size(); ++ i) {
 		// If the next value is a table, let's put the right key to the top of the stack.
 		if(lua_istable(L, -1)) {
 			// Extracts the value.
-			if(valuepath[i].key.type == luakey::p_name)
-				lua_pushstring(L, valuepath[i].key.name.c_str());
+			if (valuepath.path[i].key.type == luakey::p_name)
+				lua_pushstring(L, valuepath.path[i].key.name.c_str());
 			else
-				lua_pushinteger(L, valuepath[i].key.index);
+				lua_pushinteger(L, valuepath.path[i].key.index);
 			lua_gettable(L, -2);
 
 			// If the value is a function, run it.
 			while(lua_isfunction(L, -1)) {
-				callfunction(valuepath[i].args);
+				callfunction(valuepath.path[i].args);
 			}
 		}
 		else {
@@ -224,7 +228,7 @@ bool luadataimpl::getboolfromstack(const bool &defaultValue) {
 double luadataimpl::retrievedouble(const luapath &valuepath, const double &defaultValue) {
 	getpath(valuepath);
 	double value = getdoublefromstack(defaultValue);
-	lua_pop(L, (int)valuepath.size());
+	lua_pop(L, (int)valuepath.path.size());
 	return value;
 }
 
@@ -235,7 +239,7 @@ double luadataimpl::retrievedouble(const luapath &valuepath) {
 int luadataimpl::retrieveint(const luapath &valuepath, const int &defaultValue) {
 	getpath(valuepath);
 	int value = getintfromstack(defaultValue);
-	lua_pop(L, (int)valuepath.size());
+	lua_pop(L, (int)valuepath.path.size());
 	return value;
 }
 
@@ -246,7 +250,7 @@ int luadataimpl::retrieveint(const luapath &valuepath) {
 std::string luadataimpl::retrievestring(const luapath &valuepath, const std::string &defaultValue) {
 	getpath(valuepath);
 	std::string value = getstringfromstack(defaultValue);
-	lua_pop(L, (int)valuepath.size());
+	lua_pop(L, (int)valuepath.path.size());
 	return value;
 }
 
@@ -257,7 +261,7 @@ std::string luadataimpl::retrievestring(const luapath &valuepath) {
 bool luadataimpl::retrievebool(const luapath &valuepath, const bool &defaultValue) {
 	getpath(valuepath);
 	bool value = getboolfromstack(defaultValue);
-	lua_pop(L, (int)valuepath.size());
+	lua_pop(L, (int)valuepath.path.size());
 	return value;
 }
 
@@ -285,7 +289,7 @@ luatype luadataimpl::type(const luapath &valuepath) {
 	}
 
 	// Clears the stack.
-	lua_pop(L, (int)valuepath.size());
+	lua_pop(L, (int)valuepath.path.size());
 
 	// And returns the value.
 	return type;
@@ -302,7 +306,7 @@ std::ptrdiff_t luadataimpl::tablelen(const luapath &valuepath) {
 	}
 
 	// Clears the stack.
-	lua_pop(L, (int)valuepath.size());
+	lua_pop(L, (int)valuepath.path.size());
 
 	// And returns the length.
 	return len;
@@ -335,9 +339,53 @@ std::vector<luakey> luadataimpl::tablekeys(const luapath &valuepath) {
 	std::vector<luakey> keys = fetchtablekeys();
 
 	// Clears the stack.
-	lua_pop(L, (int)valuepath.size());
+	lua_pop(L, (int)valuepath.path.size());
 
 	return keys;
+}
+
+std::vector<luakey>::const_iterator luadataimpl::tablebegin(luapath &valuepath) {
+	// Update the cache if necessary.
+	if (valuepath.keys_cache == nullptr || valuepath.keys_cache_state != _cacheStateIndex) {
+		std::vector<luakey> keys = this->tablekeys(valuepath);
+		valuepath.keys_cache = std::make_shared<std::vector<luakey>>(keys.begin(), keys.end());
+		valuepath.keys_cache_state = _cacheStateIndex;
+	}
+
+	return valuepath.keys_cache->begin();
+}
+
+std::vector<luakey>::const_iterator luadataimpl::tableend(luapath &valuepath) {
+	// Update the cache if necessary.
+	if (valuepath.keys_cache == nullptr || valuepath.keys_cache_state != _cacheStateIndex) {
+		std::vector<luakey> keys = this->tablekeys(valuepath);
+		valuepath.keys_cache = std::make_shared<std::vector<luakey>>(keys.begin(), keys.end());
+		valuepath.keys_cache_state = _cacheStateIndex;
+	}
+
+	return valuepath.keys_cache->end();
+}
+
+std::vector<luakey>::const_iterator luadataimpl::tablebegin() {
+	// Update the cache if necessary.
+	if (_globalKeysCache == nullptr || _globalKeysCacheState != _cacheStateIndex) {
+		std::vector<luakey> keys = this->tablekeys();
+		_globalKeysCache = std::make_shared<std::vector<luakey>>(keys.begin(), keys.end());
+		_globalKeysCacheState = _cacheStateIndex;
+	}
+
+	return _globalKeysCache->begin();
+}
+
+std::vector<luakey>::const_iterator luadataimpl::tableend() {
+	// Update the cache if necessary.
+	if (_globalKeysCache == nullptr || _globalKeysCacheState != _cacheStateIndex) {
+		std::vector<luakey> keys = this->tablekeys();
+		_globalKeysCache = std::make_shared<std::vector<luakey>>(keys.begin(), keys.end());
+		_globalKeysCacheState = _cacheStateIndex;
+	}
+
+	return _globalKeysCache->end();
 }
 
 std::vector<luakey> luadataimpl::fetchtablekeys() {

@@ -26,3 +26,8 @@ table_deep_complex = {
 	}
 }
 table_mixed = { foo = "bar", "baz" }
+table_iterable = {
+	{"A", 12},
+	{"B", 24},
+	{"C", 48}
+}

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace luadata {;
 
@@ -131,7 +132,17 @@ namespace impl {
 	};
 
 	/** Structure for a value path. */
-	typedef std::vector<luapathelement> luapath;
+	struct luapath {
+		std::vector<luapathelement> path;
+		std::shared_ptr<std::vector<luakey>> keys_cache;
+		int keys_cache_state;
+
+		explicit luapath(luapathelement element) :
+			path(1, element),
+			keys_cache(nullptr)
+		{}
+	};
+	//typedef std::vector<luapathelement> luapath;
 }
 
 /**
@@ -177,6 +188,10 @@ public:
 
 	/** Gets the value at the given table key. */
 	luavalue operator[](const luakey &key) const;
+
+	/** Iterator functions for tables. */
+	std::vector<luakey>::const_iterator begin();
+	std::vector<luakey>::const_iterator end();
 
 	/** Gets the value returned by the function. */
 	luavalue operator()() const;
@@ -235,6 +250,10 @@ public:
 
 	/** Get a value in the data tree. */
 	luavalue operator[](const luakey& name) const;
+
+	/** Iterator over the keys of the data tree. */
+	std::vector<luakey>::const_iterator begin();
+	std::vector<luakey>::const_iterator end();
 
 private:
 	/** Copy is disabled. */

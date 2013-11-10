@@ -32,6 +32,15 @@ class luadataimpl {
 	/** Lists of loaded files. */
 	std::vector<std::pair<std::string, time_t>> _loadedFiles;
 
+	/** Gets incremented every time a script gets executed. */
+	int _cacheStateIndex;
+
+	/** Cache for the global data tree keys. */
+	std::shared_ptr<std::vector<luakey>> _globalKeysCache;
+
+	/** Validity state for the global data tree keys cache. */
+	int _globalKeysCacheState;
+
 public:
 	/** The constructor creates a new Lua state. */
 	luadataimpl();
@@ -69,6 +78,14 @@ public:
 
 	/** Gets a list of keys of a Lua associative table. */
 	std::vector<luakey> tablekeys(const luapath &valuepath);
+
+	/** Iterator access to keys of a Lua associative table. */
+	std::vector<luakey>::const_iterator tablebegin(luapath &valuepath);
+	std::vector<luakey>::const_iterator tableend(luapath &valuepath);
+
+	/** Iterator access to keys in the global table. */
+	std::vector<luakey>::const_iterator tablebegin();
+	std::vector<luakey>::const_iterator tableend();
 
 private:
 	/** Process a loaded chunk. */
