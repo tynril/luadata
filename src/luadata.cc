@@ -200,8 +200,8 @@ bool luadata::loadcode(const std::string &code) {
 	return _pimpl->loadcode(code);
 }
 
-void luadata::hotreload() {
-	_pimpl->hotreload();
+void luadata::hotreload(bool force) {
+	_pimpl->hotreload(force);
 }
 
 std::vector<luakey> luadata::keys() const {

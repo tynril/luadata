@@ -55,7 +55,7 @@ public:
 	bool loadcode(const std::string &code);
 
 	/** Do the hotreloading if needed. */
-	void hotreload();
+	void hotreload(bool force);
 
 	/** Gets the value of a Lua variable. */
 	double retrievedouble(const luapath &valuepath, const double &defaultValue);

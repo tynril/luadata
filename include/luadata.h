@@ -243,7 +243,7 @@ public:
 	bool loadcode(const std::string &luacode);
 
 	/** Call this function to process hot-reloading if needed. */
-	void hotreload();
+	void hotreload(bool force = false);
 
 	/** Gets the list of the keys in the data tree. */
 	std::vector<luakey> keys() const;

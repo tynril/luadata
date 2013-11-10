@@ -46,11 +46,11 @@ bool luadataimpl::loadcode(const std::string &code) {
 	return processloadedchunk();
 }
 
-void luadataimpl::hotreload() {
+void luadataimpl::hotreload(bool force) {
 	for(auto &file : _loadedFiles) {
 		// Check if the file was modified.
 		time_t lastmod = getmodtime(file.first);
-		if(lastmod != file.second) {
+		if(force || lastmod != file.second) {
 			// The file has been modified, let's reload it.
 			loadfile(file.first);
 			file.second = lastmod;
