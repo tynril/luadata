@@ -115,3 +115,13 @@ anything you'll do with this plugin.
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
+
+The [Lua](http://www.lua.org/) source code present in the `3rd-party` folder is also under [MIT Open Source License](http://opensource.org/licenses/MIT) license.
+
+    Copyright © 1994–2013 Lua.org, PUC-Rio.
+	
+The [Google Test](https://code.google.com/p/googletest/) source code also included in the `3rd-party` folder is under [New BSD License](http://opensource.org/licenses/BSD-3-Clause).
+
+The [Premake](https://bitbucket.org/premake/premake-dev) software is under [BSD license](https://bitbucket.org/premake/premake-dev/src/tip/LICENSE.txt?at=default) as well.
+
+    Copyright (C) 2002-2013 by Jason Perkins
