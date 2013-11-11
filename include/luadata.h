@@ -121,6 +121,9 @@ struct luakeycomparator {
 /** Print utility for a Lua key. */
 std::ostream& operator<<(std::ostream& os, const luakey& key);
 
+// luavalue forward declaration
+class luavalue;
+
 /** More implementation details. */
 namespace impl {
 	/** Structure for path elements. */
@@ -134,15 +137,19 @@ namespace impl {
 	/** Structure for a value path. */
 	struct luapath {
 		std::vector<luapathelement> path;
-		std::shared_ptr<std::vector<luakey>> keys_cache;
+		std::shared_ptr<std::vector<std::pair<luakey, luavalue>>> keys_cache;
 		int keys_cache_state;
 
 		explicit luapath(luapathelement element) :
 			path(1, element),
 			keys_cache(nullptr)
 		{}
+
+		explicit luapath(std::vector<luapathelement> path) :
+			path(path),
+			keys_cache(nullptr)
+		{}
 	};
-	//typedef std::vector<luapathelement> luapath;
 }
 
 /**
@@ -190,8 +197,8 @@ public:
 	luavalue operator[](const luakey &key) const;
 
 	/** Iterator functions for tables. */
-	std::vector<luakey>::const_iterator begin();
-	std::vector<luakey>::const_iterator end();
+	std::vector<std::pair<luakey, luavalue>>::const_iterator begin();
+	std::vector<std::pair<luakey, luavalue>>::const_iterator end();
 
 	/** Gets the value returned by the function. */
 	luavalue operator()() const;
@@ -210,6 +217,7 @@ private:
 	luavalue(const impl::luapath &valuepath, impl::luadataimpl *impl);
 
 	friend class luadata;
+	friend class impl::luadataimpl;
 	friend void swap(luavalue& lhs, luavalue& rhs);
 };
 
@@ -252,8 +260,8 @@ public:
 	luavalue operator[](const luakey& name) const;
 
 	/** Iterator over the keys of the data tree. */
-	std::vector<luakey>::const_iterator begin();
-	std::vector<luakey>::const_iterator end();
+	std::vector<std::pair<luakey, luavalue>>::const_iterator begin();
+	std::vector<std::pair<luakey, luavalue>>::const_iterator end();
 
 private:
 	/** Copy is disabled. */

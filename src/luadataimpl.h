@@ -36,7 +36,7 @@ class luadataimpl {
 	int _cacheStateIndex;
 
 	/** Cache for the global data tree keys. */
-	std::shared_ptr<std::vector<luakey>> _globalKeysCache;
+	std::shared_ptr<std::vector<std::pair<luakey, luavalue>>> _globalKeysCache;
 
 	/** Validity state for the global data tree keys cache. */
 	int _globalKeysCacheState;
@@ -80,12 +80,12 @@ public:
 	std::vector<luakey> tablekeys(const luapath &valuepath);
 
 	/** Iterator access to keys of a Lua associative table. */
-	std::vector<luakey>::const_iterator tablebegin(luapath &valuepath);
-	std::vector<luakey>::const_iterator tableend(luapath &valuepath);
+	std::vector<std::pair<luakey, luavalue>>::const_iterator tablebegin(luapath &valuepath);
+	std::vector<std::pair<luakey, luavalue>>::const_iterator tableend(luapath &valuepath);
 
 	/** Iterator access to keys in the global table. */
-	std::vector<luakey>::const_iterator tablebegin();
-	std::vector<luakey>::const_iterator tableend();
+	std::vector<std::pair<luakey, luavalue>>::const_iterator tablebegin();
+	std::vector<std::pair<luakey, luavalue>>::const_iterator tableend();
 
 private:
 	/** Process a loaded chunk. */
@@ -99,6 +99,12 @@ private:
 
 	/** Returns the keys of the table on the top of the stack. */
 	inline std::vector<luakey> fetchtablekeys();
+
+	/** Updates keys cache. */
+	inline void updatekeyscache(luapath &valuepath);
+
+	/** Updates the global keys cache. */
+	inline void updateglobalkeyscache();
 
 	/** Gets a value from the top of the stack. */
 	double getdoublefromstack(const double &defaultValue);

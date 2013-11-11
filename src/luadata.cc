@@ -95,11 +95,11 @@ luavalue luavalue::operator[](const luakey &key) const {
 	return luavalue(appendedPath, _pimpl);
 }
 
-std::vector<luakey>::const_iterator luavalue::begin() {
+std::vector<std::pair<luakey, luavalue>>::const_iterator luavalue::begin() {
 	return _pimpl->tablebegin(_valuepath);
 }
 
-std::vector<luakey>::const_iterator luavalue::end() {
+std::vector<std::pair<luakey, luavalue>>::const_iterator luavalue::end() {
 	return _pimpl->tableend(_valuepath);
 }
 
@@ -212,11 +212,11 @@ luavalue luadata::operator[](const luakey &key) const {
 	return luavalue(impl::luapath(impl::luapathelement(key)), _pimpl);
 }
 
-std::vector<luakey>::const_iterator luadata::begin() {
+std::vector<std::pair<luakey, luavalue>>::const_iterator luadata::begin() {
 	return _pimpl->tablebegin();
 }
 
-std::vector<luakey>::const_iterator luadata::end() {
+std::vector<std::pair<luakey, luavalue>>::const_iterator luadata::end() {
 	return _pimpl->tableend();
 }
 

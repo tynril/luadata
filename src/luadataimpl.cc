@@ -344,45 +344,61 @@ std::vector<luakey> luadataimpl::tablekeys(const luapath &valuepath) {
 	return keys;
 }
 
-std::vector<luakey>::const_iterator luadataimpl::tablebegin(luapath &valuepath) {
+void luadataimpl::updatekeyscache(luapath &valuepath) {
+	std::vector<luakey> keys = this->tablekeys(valuepath);
+	valuepath.keys_cache = std::make_shared<std::vector<std::pair<luakey, luavalue>>>();
+
+	std::transform(keys.begin(), keys.end(), std::back_inserter(*valuepath.keys_cache), [this, &valuepath](luakey &key){
+		std::vector<luapathelement> path(valuepath.path.begin(), valuepath.path.end());
+		path.push_back(key);
+		return std::pair<luakey, luavalue>(key, luavalue(luapath(path), this));
+	});
+
+	valuepath.keys_cache_state = _cacheStateIndex;
+}
+
+std::vector<std::pair<luakey, luavalue>>::const_iterator luadataimpl::tablebegin(luapath &valuepath) {
 	// Update the cache if necessary.
 	if (valuepath.keys_cache == nullptr || valuepath.keys_cache_state != _cacheStateIndex) {
-		std::vector<luakey> keys = this->tablekeys(valuepath);
-		valuepath.keys_cache = std::make_shared<std::vector<luakey>>(keys.begin(), keys.end());
-		valuepath.keys_cache_state = _cacheStateIndex;
+		updatekeyscache(valuepath);
 	}
 
 	return valuepath.keys_cache->begin();
 }
 
-std::vector<luakey>::const_iterator luadataimpl::tableend(luapath &valuepath) {
+std::vector<std::pair<luakey, luavalue>>::const_iterator luadataimpl::tableend(luapath &valuepath) {
 	// Update the cache if necessary.
 	if (valuepath.keys_cache == nullptr || valuepath.keys_cache_state != _cacheStateIndex) {
-		std::vector<luakey> keys = this->tablekeys(valuepath);
-		valuepath.keys_cache = std::make_shared<std::vector<luakey>>(keys.begin(), keys.end());
-		valuepath.keys_cache_state = _cacheStateIndex;
+		updatekeyscache(valuepath);
 	}
 
 	return valuepath.keys_cache->end();
 }
 
-std::vector<luakey>::const_iterator luadataimpl::tablebegin() {
+void luadataimpl::updateglobalkeyscache() {
+	std::vector<luakey> keys = this->tablekeys();
+	_globalKeysCache = std::make_shared<std::vector<std::pair<luakey, luavalue>>>();
+
+	std::transform(keys.begin(), keys.end(), std::back_inserter(*_globalKeysCache), [this](luakey &key){
+		return std::pair<luakey, luavalue>(key, luavalue(luapath(luapathelement(key)), this));
+	});
+
+	_globalKeysCacheState = _cacheStateIndex;
+}
+
+std::vector<std::pair<luakey, luavalue>>::const_iterator luadataimpl::tablebegin() {
 	// Update the cache if necessary.
 	if (_globalKeysCache == nullptr || _globalKeysCacheState != _cacheStateIndex) {
-		std::vector<luakey> keys = this->tablekeys();
-		_globalKeysCache = std::make_shared<std::vector<luakey>>(keys.begin(), keys.end());
-		_globalKeysCacheState = _cacheStateIndex;
+		updateglobalkeyscache();
 	}
 
 	return _globalKeysCache->begin();
 }
 
-std::vector<luakey>::const_iterator luadataimpl::tableend() {
+std::vector<std::pair<luakey, luavalue>>::const_iterator luadataimpl::tableend() {
 	// Update the cache if necessary.
 	if (_globalKeysCache == nullptr || _globalKeysCacheState != _cacheStateIndex) {
-		std::vector<luakey> keys = this->tablekeys();
-		_globalKeysCache = std::make_shared<std::vector<luakey>>(keys.begin(), keys.end());
-		_globalKeysCacheState = _cacheStateIndex;
+		updateglobalkeyscache();
 	}
 
 	return _globalKeysCache->end();

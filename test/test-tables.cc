@@ -334,12 +334,12 @@ TEST_F(LuaDataTablesTest, TestIterator)
 
 	// Iterate over the value.
 	int i = 0;
-	for (auto &index : value) {
-		EXPECT_EQ(std::to_string(i + 1), index.str());
-		EXPECT_EQ(luadata::luatype::lua_string, value[index][1].type());
-		EXPECT_EQ(luadata::luatype::lua_number, value[index][2].type());
-		EXPECT_EQ(expectedStrings[i], value[index][1].asstring());
-		EXPECT_EQ(expectedInts[i], value[index][2].asint());
+	for (auto &item : value) {
+		EXPECT_EQ(std::to_string(i + 1), item.first.str());
+		EXPECT_EQ(luadata::luatype::lua_string, item.second[1].type());
+		EXPECT_EQ(luadata::luatype::lua_number, item.second[2].type());
+		EXPECT_EQ(expectedStrings[i], item.second[1].asstring());
+		EXPECT_EQ(expectedInts[i], item.second[2].asint());
 		i++;
 	}
 	EXPECT_EQ(3, i);
