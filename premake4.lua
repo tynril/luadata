@@ -61,7 +61,7 @@ solution "luadata"
 		
 		configuration "gmake"
 			-- Enabling the C++11 standard on Make
-			buildoptions { "-std=c++11" }
+			buildoptions { "-std=c++0x" }
 			
 			-- Linking with pthread for gtest.
 			links { "pthread" }

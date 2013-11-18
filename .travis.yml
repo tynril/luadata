@@ -11,10 +11,10 @@ install:
   - ./3rd-party/premake-bin/premake5 gmake
 script:
   - cd projects
-  - make config=debug_x86 clean all
   - make config=debug_x64 clean all
-  - ../bin/x32/Debug/luadata-test_d
+  - make config=release_x64 clean all
   - ../bin/x64/Debug/luadata-test_d
+  - ../bin/x64/Release/luadata-test
 notifications:
   recipients:
     - tynril@gmail.com
