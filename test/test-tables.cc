@@ -143,14 +143,14 @@ TEST_F(LuaDataTablesTest, TestNested)
 	EXPECT_EQ(3, value.tablelen());
 
 	// The length of the inner tables should be consistant as well.
-	for (std::ptrdiff_t i = 1; i <= value.tablelen(); i++)
+	for (int i = 1; i <= value.tablelen(); i++)
 		EXPECT_EQ(2, value[i].tablelen());
 
 	// The key list size of the outer table should be the same as its length.
 	EXPECT_EQ(3, value.tablekeys().size());
 
 	// And same for the inner tables.
-	for (std::ptrdiff_t i = 1; i <= value.tablelen(); i++)
+	for (int i = 1; i <= value.tablelen(); i++)
 		EXPECT_EQ(2, value[i].tablekeys().size());
 
 	// Tables in Lua starts with index 1.
@@ -195,14 +195,14 @@ TEST_F(LuaDataTablesTest, TestNestedAssoc)
 	EXPECT_EQ(0, value.tablelen());
 
 	// The length of the inner non-associative tables should be set, tho.
-	for (std::ptrdiff_t i = 1; i <= value.tablelen(); i++)
+	for (int i = 1; i <= value.tablelen(); i++)
 		EXPECT_EQ(2, value[i].tablelen());
 
 	// The key list size of the outer table should be set.
 	EXPECT_EQ(3, value.tablekeys().size());
 
 	// And same for the inner tables.
-	for (std::ptrdiff_t i = 1; i <= value.tablelen(); i++)
+	for (int i = 1; i <= value.tablelen(); i++)
 		EXPECT_EQ(2, value[i].tablekeys().size());
 
 	// Check the types of the inner elements.

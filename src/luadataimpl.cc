@@ -413,7 +413,7 @@ std::vector<luakey> luadataimpl::fetchtablekeys() {
 			if(lua_type(L, -2) == LUA_TSTRING)
 				keys.push_back(luakey(lua_tostring(L, -2)));
 			else {
-				keys.push_back(luakey(lua_tointeger(L, -2)));
+				keys.push_back(luakey(static_cast<int>(lua_tointeger(L, -2))));
 			}
 			lua_pop(L, 1);
 		}

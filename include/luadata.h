@@ -73,19 +73,12 @@ class luakey {
 		p_index
 	} type;
 	std::string name;
-	std::ptrdiff_t index;
+	int index;
 
 public:
 	luakey(const char * k) : type(p_name), name(k) {}
 	luakey(std::string k) : type(p_name), name(k) {}
-	luakey(std::ptrdiff_t i) : type(p_index), index(i) {}
-#if defined(LUADATA_64)
 	luakey(int i) : type(p_index), index(i) {}
-#elif defined(LUADATA_32)
-	// std::ptrdiff_t is (probably) already an int on x32, avoid redefinition.
-	// This could have been an std::enable_if<> use-case, but I've avoided it
-	// to retain VS2012 support.
-#endif
 	luakey() : type(p_undefined) {}
 
 	const std::string str() const {
