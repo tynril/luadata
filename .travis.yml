@@ -13,11 +13,11 @@ script:
   - cd projects
   - make config=debug_x86 clean all
   - make config=debug_x64 clean all
-  - ls
+  - ../bin/x32/Debug/luadata-test_d
+  - ../bin/x64/Debug/luadata-test_d
 notifications:
   recipients:
     - tynril@gmail.com
   email:
     - on_success: change
     - on_failure: always
-

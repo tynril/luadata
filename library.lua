@@ -32,4 +32,4 @@ project "luadata"
 	
 	-- Enabling the C++11 standard on Make
 	configuration "gmake"
-		buildoptions { "-std=c++11" }
+		buildoptions { "-std=c++0x" }

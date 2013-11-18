@@ -81,7 +81,7 @@ solution "luadata"
 		
 		configuration "gmake"
 			-- Enabling the C++11 standard on Make
-			buildoptions { "-std=c++11" }
+			buildoptions { "-std=c++0x" }
 	
 	-- Link with the library.
 	dofile "library.lua"
