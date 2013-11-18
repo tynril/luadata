@@ -5,6 +5,7 @@ branches:
   only:
     - master
 install:
+  - chmod +x ./3rd-party/premake-bin/premake5
   - ./3rd-party/premake-bin/premake5 gmake
 script:
   - cd project && make
