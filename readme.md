@@ -1,6 +1,8 @@
 luadata
 =======
 
+[![Build Status](https://travis-ci.org/tynril/luadata.png?branch=master)](https://travis-ci.org/tynril/luadata)
+
 Provides an easy way to access data defined in external Lua scripts from C++ code.
 
 Sample
