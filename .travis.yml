@@ -12,9 +12,8 @@ install:
 script:
   - cd projects
   - make config=debug_x64 clean all
-  - make config=release_x64 clean all
+  - cd ../test/resources
   - ../bin/x64/Debug/luadata-test_d
-  - ../bin/x64/Release/luadata-test
 notifications:
   recipients:
     - tynril@gmail.com
