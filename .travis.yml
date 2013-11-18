@@ -1,0 +1,16 @@
+language: cpp
+compiler:
+  - gcc
+branches:
+  only:
+    - master
+install:
+  - ./3rd-party/premake-bin/premake5 gmake
+script:
+  - cd project && make
+notifications:
+  recipients:
+    - tynril@gmail.com
+  email:
+    - on_success: change
+    - on_failure: always
