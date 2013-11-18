@@ -5,15 +5,13 @@ branches:
   only:
     - master
 install:
-  - sudo apt-get update
-  - sudo apt-get install gcc-multilib
   - chmod +x ./3rd-party/premake-bin/premake5
   - ./3rd-party/premake-bin/premake5 gmake
 script:
   - cd projects
   - make config=debug_x64 clean all
   - cd ../test/resources
-  - ../bin/x64/Debug/luadata-test_d
+  - ../../bin/x64/Debug/luadata-test_d
 notifications:
   recipients:
     - tynril@gmail.com
