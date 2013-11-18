@@ -5,12 +5,15 @@ branches:
   only:
     - master
 install:
+  - sudo apt-get update
+  - sudo apt-get install gcc-multilib
   - chmod +x ./3rd-party/premake-bin/premake5
   - ./3rd-party/premake-bin/premake5 gmake
 script:
   - ls
-  - cd projects && make
-  - tree
+  - cd projects && make config=debug_x86
+  - cd projects && make config=debug_x64
+  - ls
 notifications:
   recipients:
     - tynril@gmail.com
