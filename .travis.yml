@@ -10,9 +10,9 @@ install:
   - chmod +x ./3rd-party/premake-bin/premake5
   - ./3rd-party/premake-bin/premake5 gmake
 script:
-  - ls
-  - cd projects && make config=debug_x86
-  - cd projects && make config=debug_x64
+  - cd projects
+  - make config=debug_x86 clean all
+  - make config=debug_x64 clean all
   - ls
 notifications:
   recipients:
